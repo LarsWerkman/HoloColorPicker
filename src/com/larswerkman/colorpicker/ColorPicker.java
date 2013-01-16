@@ -130,7 +130,7 @@ public class ColorPicker extends View {
 	private int ave(int s, int d, float p) {
 		return s + java.lang.Math.round(p * (d - s));
 	}
-	
+
 	private float calculateUnit(){
 		float angle = (float) java.lang.Math.atan2(mPointerPosition[1],
 				mPointerPosition[0]);
@@ -241,7 +241,7 @@ public class ColorPicker extends View {
 		return new SavedState(superState, mPointerPosition[0],
 				mPointerPosition[1], booleanToInt(isFirstTime), calculateUnit());
 	}
-	
+
 	private int booleanToInt(boolean bool) {
 		if (bool) {
 			return 0;
@@ -249,7 +249,7 @@ public class ColorPicker extends View {
 			return 1;
 		}
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Parcelable state) {
 		SavedState savedState = (SavedState) state;
@@ -260,7 +260,7 @@ public class ColorPicker extends View {
 		isFirstTime = savedState.getBoolFirstTime();
 		mCenterPaintColor.setColor(interpColor(mColors, savedState.getUnit()));
 	}
-	
+
 	protected static class SavedState extends BaseSavedState {
 
 		private final float positionX;
@@ -300,11 +300,11 @@ public class ColorPicker extends View {
 				return false;
 			}
 		}
-		
+
 		public float getUnit(){
 			return unit;
 		}
-		
+
 		@Override
 		public void writeToParcel(Parcel destination, int flags) {
 			super.writeToParcel(destination, flags);
