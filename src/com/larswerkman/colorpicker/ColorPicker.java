@@ -50,6 +50,14 @@ public class ColorPicker extends View {
 	private boolean onPointer = false;
 	private int color;
 
+	/**
+	 * Radius of the color wheel in pixels.
+	 *
+	 * <p>Note: (Re)calculated in {@link #onMeasure(int, int)}.</p>
+	 */
+	private float mColorWheelRadius;
+
+
 	public ColorPicker(Context context) {
 		super(context);
 		init(null, 0);
@@ -94,9 +102,8 @@ public class ColorPicker extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		radians = ((getWidth() - getPaddingLeft() - getPaddingRight()) * 0.5f);
-		colorWheelRectangle.set(-radians + mPointerSize, -radians + mPointerSize, radians
-				- mPointerSize, radians - mPointerSize);
+		colorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius,
+				mColorWheelRadius);
 		mCenterPath.addOval(colorWheelRectangle, Path.Direction.CW);
 		mPathMeasure.setPath(mCenterPath, true);
 
@@ -107,7 +114,7 @@ public class ColorPicker extends View {
 			mPointerPosition = findMinDistanceVector(0, (int) -radians);
 			if (isInEditMode()) {
 				mPointerPosition[0] = 0;
-				mPointerPosition[1] = -radians + mPointerSize;
+				mPointerPosition[1] = -mColorWheelRadius;
 			}
 			mCenterPaintColor.setColor(interpColor(mColors, calculateUnit()));
 			isFirstTime = false;
@@ -125,6 +132,9 @@ public class ColorPicker extends View {
 		int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
 		int min = Math.min(width, height);
 		setMeasuredDimension(min, min);
+
+		radians = ((min - getPaddingLeft() - getPaddingRight()) * 0.5f);
+		mColorWheelRadius = radians - mPointerSize;
 	}
 
 	private int ave(int s, int d, float p) {
