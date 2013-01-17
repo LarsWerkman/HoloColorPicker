@@ -37,10 +37,16 @@ public class ColorPicker extends View {
 	private static final String STATE_PARENT = "parent";
 	private static final String STATE_ANGLE = "angle";
 
+	/**
+	 * Colors to construct the color wheel using {@link SweepGradient}.
+	 */
+	private static final int[] COLORS = new int[] { 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF,
+		0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
+
+
 	private Paint mColorWheelPaint;
 	private Paint mPointerHaloPaint;
 	private Paint mPointerColor;
-	private int[] mColors;
 	private int mWheelSize;
 	private int mPointerSize;
 	private RectF mColorWheelRectangle = new RectF();
@@ -99,9 +105,7 @@ public class ColorPicker extends View {
 
 		a.recycle();
 
-		mColors = new int[] { 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF,
-				0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
-		Shader s = new SweepGradient(0, 0, mColors, null);
+		Shader s = new SweepGradient(0, 0, COLORS, null);
 
 		mColorWheelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mColorWheelPaint.setShader(s);
@@ -166,18 +170,18 @@ public class ColorPicker extends View {
 		}
 
 		if (unit <= 0) {
-			return mColors[0];
+			return COLORS[0];
 		}
 		if (unit >= 1) {
-			return mColors[mColors.length - 1];
+			return COLORS[COLORS.length - 1];
 		}
 
-		float p = unit * (mColors.length - 1);
+		float p = unit * (COLORS.length - 1);
 		int i = (int) p;
 		p -= i;
 
-		int c0 = mColors[i];
-		int c1 = mColors[i + 1];
+		int c0 = COLORS[i];
+		int c1 = COLORS[i + 1];
 		int a = ave(Color.alpha(c0), Color.alpha(c1), p);
 		int r = ave(Color.red(c0), Color.red(c1), p);
 		int g = ave(Color.green(c0), Color.green(c1), p);
