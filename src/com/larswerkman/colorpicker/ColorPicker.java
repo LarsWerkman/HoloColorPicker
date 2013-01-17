@@ -44,7 +44,6 @@ public class ColorPicker extends View {
 	private int mWheelSize;
 	private int mPointerSize;
 	private RectF colorWheelRectangle = new RectF();
-	private static final float PI = 3.1415926f;
 	private boolean onPointer = false;
 	private int color;
 
@@ -161,7 +160,7 @@ public class ColorPicker extends View {
 	 * @return The ARGB value of the color on the color wheel at the specified angle.
 	 */
 	private int calculateColor(float angle) {
-		float unit = angle / (2 * PI);
+		float unit = (float) (angle / (2 * Math.PI));
 		if (unit < 0) {
 			unit += 1;
 		}
