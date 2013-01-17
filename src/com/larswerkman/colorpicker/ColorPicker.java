@@ -21,15 +21,12 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -38,8 +35,6 @@ public class ColorPicker extends View {
 	private Paint mCenterPaint;
 	private Paint mCenterPaintColor;
 	private int[] mColors;
-	private Path mCenterPath = new Path();
-	private PathMeasure mPathMeasure = new PathMeasure();
 	private float[] mPointerPosition = new float[2];
 	private boolean isFirstTime = true;
 	private int mWheelSize;
@@ -118,14 +113,12 @@ public class ColorPicker extends View {
 	protected void onDraw(Canvas canvas) {
 		colorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius,
 				mColorWheelRadius);
-		mCenterPath.addOval(colorWheelRectangle, Path.Direction.CW);
-		mPathMeasure.setPath(mCenterPath, true);
 
 		canvas.translate(mTranslationOffset, mTranslationOffset);
 		canvas.drawOval(colorWheelRectangle, mPaint);
 
 		if (isFirstTime) {
-			mPointerPosition = findMinDistanceVector(0, (int) -mTranslationOffset);
+			mPointerPosition = calculatePointerPosition((float) (-Math.PI / 2));
 			if (isInEditMode()) {
 				mPointerPosition[0] = 0;
 				mPointerPosition[1] = -mColorWheelRadius;
@@ -208,8 +201,9 @@ public class ColorPicker extends View {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (onPointer) {
-				mPointerPosition = findMinDistanceVector((int) x, (int) y);
 				float angle = (float) java.lang.Math.atan2(y, x);
+				mPointerPosition = calculatePointerPosition(angle);
+
 				float unit = angle / (2 * PI);
 				if (unit < 0) {
 					unit += 1;
@@ -225,36 +219,19 @@ public class ColorPicker extends View {
 		return true;
 	}
 
-	private float[] findMinDistanceVector(int x, int y) {
+	/**
+	 * Calculate the pointer's coordinates on the color wheel using the supplied angle.
+	 *
+	 * @param angle
+	 *         The position of the pointer expressed as angle (in rad).
+	 *
+	 * @return The coordinates of the pointer's center in our internal coordinate system.
+	 */
+	private float[] calculatePointerPosition(float angle) {
+		float x = (float) (mColorWheelRadius * Math.cos(angle));
+		float y = (float) (mColorWheelRadius * Math.sin(angle));
 
-		float[] xy = new float[2];
-		float[] ten = new float[2];
-
-		float distanceVectorOld = Float.MAX_VALUE;
-		float distanceVectorNew = 0;
-		float[] minXY = new float[2];
-		for (float distance = 0; distance < mPathMeasure.getLength(); distance++) {
-
-			mPathMeasure.getPosTan(distance, xy, ten);
-
-			distanceVectorNew = dist(x, y, xy[0], xy[1]);
-
-			if (distanceVectorNew < distanceVectorOld) {
-
-				minXY[0] = xy[0];
-				minXY[1] = xy[1];
-				distanceVectorOld = distanceVectorNew;
-
-			}
-		}
-
-		return minXY;
-	}
-
-	private float dist(float x1, float y1, float x2, float y2) {
-		float distX = x1 - x2;
-		float distY = y1 - y2;
-		return FloatMath.sqrt(distX * distX + distY * distY);
+		return new float[] { x, y };
 	}
 
 	@Override
