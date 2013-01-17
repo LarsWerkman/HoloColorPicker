@@ -126,12 +126,19 @@ public class ColorPicker extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		// All of our positions are using our internal coordinate system. Instead of translating
+		// them we let Canvas do the work for us.
 		canvas.translate(mTranslationOffset, mTranslationOffset);
+
+		// Draw the color wheel.
 		canvas.drawOval(mColorWheelRectangle, mColorWheelPaint);
 
 		float[] pointerPosition = calculatePointerPosition(mAngle);
-		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
-				mPointerSize, mPointerHaloPaint);
+
+		// Draw the pointer's "halo"
+		canvas.drawCircle(pointerPosition[0], pointerPosition[1], mPointerSize, mPointerHaloPaint);
+
+		// Draw the pointer (the currently selected color) slightly smaller on top.
 		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
 				(float) (mPointerSize / 1.2), mPointerColor);
 	}
@@ -191,6 +198,11 @@ public class ColorPicker extends View {
 		return Color.argb(a, r, g, b);
 	}
 
+	/**
+	 * Get the currently selected color.
+	 *
+	 * @return The ARGB value of the currently selected color.
+	 */
 	public int getColor() {
 		return mColor;
 	}
@@ -203,6 +215,7 @@ public class ColorPicker extends View {
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			// Check whether the user pressed on (or near) the pointer
 			float[] pointerPosition = calculatePointerPosition(mAngle);
 			if (x >= (pointerPosition[0] - 48) && x <= (pointerPosition[0] + 48)
 					&& y >= (pointerPosition[1] - 48) && y <= (pointerPosition[1] + 48)) {
