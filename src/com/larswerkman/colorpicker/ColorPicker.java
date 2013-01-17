@@ -123,8 +123,8 @@ public class ColorPicker extends View {
 		int height = getDefaultSize(getSuggestedMinimumHeight(),
 				heightMeasureSpec);
 		int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-		int max = Math.max(width, height);
-		setMeasuredDimension(max, max);
+		int min = Math.min(width, height);
+		setMeasuredDimension(min, min);
 	}
 
 	private int ave(int s, int d, float p) {
