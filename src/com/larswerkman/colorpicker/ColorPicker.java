@@ -194,24 +194,22 @@ public class ColorPicker extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		float x = event.getX();
-		float y = event.getY();
+		// Convert coordinates to our internal coordinate system
+		float x = event.getX() - mTranslationOffset;
+		float y = event.getY() - mTranslationOffset;
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			if ((x - mTranslationOffset) >= (mPointerPosition[0] - 48)
-					&& (x - mTranslationOffset) <= (mPointerPosition[0] + 48)
-					&& (y - mTranslationOffset) >= (mPointerPosition[1] - 48)
-					&& (y - mTranslationOffset) <= (mPointerPosition[1] + 48)) {
+			if (x >= (mPointerPosition[0] - 48) && x <= (mPointerPosition[0] + 48)
+					&& y >= (mPointerPosition[1] - 48) && y <= (mPointerPosition[1] + 48)) {
 				onPointer = true;
 				invalidate();
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (onPointer) {
-				mPointerPosition = findMinDistanceVector((int) (x - mTranslationOffset),
-						((int) (y - mTranslationOffset)));
-				float angle = (float) java.lang.Math.atan2((y - mTranslationOffset), (x - mTranslationOffset));
+				mPointerPosition = findMinDistanceVector((int) x, (int) y);
+				float angle = (float) java.lang.Math.atan2(y, x);
 				float unit = angle / (2 * PI);
 				if (unit < 0) {
 					unit += 1;
