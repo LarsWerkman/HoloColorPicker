@@ -37,15 +37,15 @@ public class ColorPicker extends View {
 	private static final String STATE_PARENT = "parent";
 	private static final String STATE_ANGLE = "angle";
 
-	private Paint mPaint;
-	private Paint mCenterPaint;
-	private Paint mCenterPaintColor;
+	private Paint mColorWheelPaint;
+	private Paint mPointerHaloPaint;
+	private Paint mPointerColor;
 	private int[] mColors;
 	private int mWheelSize;
 	private int mPointerSize;
-	private RectF colorWheelRectangle = new RectF();
-	private boolean onPointer = false;
-	private int color;
+	private RectF mColorWheelRectangle = new RectF();
+	private boolean mUserIsMovingPointer = false;
+	private int mColor;
 
 	/**
 	 * Number of pixels the origin of this view is moved in X- and Y-direction.
@@ -103,36 +103,36 @@ public class ColorPicker extends View {
 				0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
 		Shader s = new SweepGradient(0, 0, mColors, null);
 
-		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPaint.setShader(s);
-		mPaint.setStyle(Paint.Style.STROKE);
-		mPaint.setStrokeWidth(mWheelSize);
+		mColorWheelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mColorWheelPaint.setShader(s);
+		mColorWheelPaint.setStyle(Paint.Style.STROKE);
+		mColorWheelPaint.setStrokeWidth(mWheelSize);
 
-		mCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCenterPaint.setColor(Color.BLACK);
-		mCenterPaint.setStrokeWidth(5);
-		mCenterPaint.setAlpha(0x60);
+		mPointerHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mPointerHaloPaint.setColor(Color.BLACK);
+		mPointerHaloPaint.setStrokeWidth(5);
+		mPointerHaloPaint.setAlpha(0x60);
 
-		mCenterPaintColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCenterPaintColor.setStrokeWidth(5);
+		mPointerColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mPointerColor.setStrokeWidth(5);
 
 		mAngle = (float) (-Math.PI / 2);
-		mCenterPaintColor.setColor(calculateColor(mAngle));
+		mPointerColor.setColor(calculateColor(mAngle));
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		colorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius,
+		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius,
 				mColorWheelRadius);
 
 		canvas.translate(mTranslationOffset, mTranslationOffset);
-		canvas.drawOval(colorWheelRectangle, mPaint);
+		canvas.drawOval(mColorWheelRectangle, mColorWheelPaint);
 
 		float[] pointerPosition = calculatePointerPosition(mAngle);
 		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
-				mPointerSize, mCenterPaint);
+				mPointerSize, mPointerHaloPaint);
 		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
-				(float) (mPointerSize / 1.2), mCenterPaintColor);
+				(float) (mPointerSize / 1.2), mPointerColor);
 	}
 
 	@Override
@@ -183,12 +183,12 @@ public class ColorPicker extends View {
 		int g = ave(Color.green(c0), Color.green(c1), p);
 		int b = ave(Color.blue(c0), Color.blue(c1), p);
 
-		color = Color.argb(a, r, g, b);
+		mColor = Color.argb(a, r, g, b);
 		return Color.argb(a, r, g, b);
 	}
 
 	public int getColor() {
-		return color;
+		return mColor;
 	}
 
 	@Override
@@ -202,19 +202,19 @@ public class ColorPicker extends View {
 			float[] pointerPosition = calculatePointerPosition(mAngle);
 			if (x >= (pointerPosition[0] - 48) && x <= (pointerPosition[0] + 48)
 					&& y >= (pointerPosition[1] - 48) && y <= (pointerPosition[1] + 48)) {
-				onPointer = true;
+				mUserIsMovingPointer = true;
 				invalidate();
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
-			if (onPointer) {
+			if (mUserIsMovingPointer) {
 				mAngle = (float) java.lang.Math.atan2(y, x);
-				mCenterPaintColor.setColor(calculateColor(mAngle));
+				mPointerColor.setColor(calculateColor(mAngle));
 				invalidate();
 			}
 			break;
 		case MotionEvent.ACTION_UP:
-			onPointer = false;
+			mUserIsMovingPointer = false;
 			break;
 		}
 		return true;
@@ -254,6 +254,6 @@ public class ColorPicker extends View {
 		super.onRestoreInstanceState(superState);
 
 		mAngle = savedState.getFloat(STATE_ANGLE);
-		mCenterPaintColor.setColor(calculateColor(mAngle));
+		mPointerColor.setColor(calculateColor(mAngle));
 	}
 }
