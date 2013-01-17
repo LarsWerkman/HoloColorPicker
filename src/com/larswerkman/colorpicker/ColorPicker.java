@@ -66,6 +66,11 @@ public class ColorPicker extends View {
 	 */
 	private float mColorWheelRadius;
 
+	/**
+	 * The pointer's position expressed as angle (in rad).
+	 */
+	private float mAngle;
+
 
 	public ColorPicker(Context context) {
 		super(context);
@@ -118,12 +123,13 @@ public class ColorPicker extends View {
 		canvas.drawOval(colorWheelRectangle, mPaint);
 
 		if (isFirstTime) {
-			mPointerPosition = calculatePointerPosition((float) (-Math.PI / 2));
+			mAngle = (float) (-Math.PI / 2);
+			mPointerPosition = calculatePointerPosition(mAngle);
 			if (isInEditMode()) {
 				mPointerPosition[0] = 0;
 				mPointerPosition[1] = -mColorWheelRadius;
 			}
-			mCenterPaintColor.setColor(interpColor(mColors, calculateUnit()));
+			mCenterPaintColor.setColor(calculateColor(mAngle));
 			isFirstTime = false;
 		}
 		canvas.drawCircle(mPointerPosition[0], mPointerPosition[1],
@@ -148,30 +154,33 @@ public class ColorPicker extends View {
 		return s + java.lang.Math.round(p * (d - s));
 	}
 
-	private float calculateUnit(){
-		float angle = (float) java.lang.Math.atan2(mPointerPosition[1],
-				mPointerPosition[0]);
+	/**
+	 * Calculate the color using the supplied angle.
+	 *
+	 * @param angle
+	 *         The selected color's position expressed as angle (in rad).
+	 *
+	 * @return The ARGB value of the color on the color wheel at the specified angle.
+	 */
+	private int calculateColor(float angle) {
 		float unit = angle / (2 * PI);
 		if (unit < 0) {
 			unit += 1;
 		}
-		return unit;
-	}
 
-	private int interpColor(int colors[], float unit) {
 		if (unit <= 0) {
-			return colors[0];
+			return mColors[0];
 		}
 		if (unit >= 1) {
-			return colors[colors.length - 1];
+			return mColors[mColors.length - 1];
 		}
 
-		float p = unit * (colors.length - 1);
+		float p = unit * (mColors.length - 1);
 		int i = (int) p;
 		p -= i;
 
-		int c0 = colors[i];
-		int c1 = colors[i + 1];
+		int c0 = mColors[i];
+		int c1 = mColors[i + 1];
 		int a = ave(Color.alpha(c0), Color.alpha(c1), p);
 		int r = ave(Color.red(c0), Color.red(c1), p);
 		int g = ave(Color.green(c0), Color.green(c1), p);
@@ -201,14 +210,9 @@ public class ColorPicker extends View {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (onPointer) {
-				float angle = (float) java.lang.Math.atan2(y, x);
-				mPointerPosition = calculatePointerPosition(angle);
-
-				float unit = angle / (2 * PI);
-				if (unit < 0) {
-					unit += 1;
-				}
-				mCenterPaintColor.setColor(interpColor(mColors, unit));
+				mAngle = (float) java.lang.Math.atan2(y, x);
+				mPointerPosition = calculatePointerPosition(mAngle);
+				mCenterPaintColor.setColor(calculateColor(mAngle));
 				invalidate();
 			}
 			break;
@@ -238,7 +242,7 @@ public class ColorPicker extends View {
 	protected Parcelable onSaveInstanceState() {
 		Parcelable superState = super.onSaveInstanceState();
 		return new SavedState(superState, mPointerPosition[0],
-				mPointerPosition[1], booleanToInt(isFirstTime), calculateUnit());
+				mPointerPosition[1], booleanToInt(isFirstTime), mAngle);
 	}
 
 	private int booleanToInt(boolean bool) {
@@ -257,7 +261,8 @@ public class ColorPicker extends View {
 		mPointerPosition[0] = savedState.getPositionX();
 		mPointerPosition[1] = savedState.getPositionY();
 		isFirstTime = savedState.getBoolFirstTime();
-		mCenterPaintColor.setColor(interpColor(mColors, savedState.getUnit()));
+		mAngle = savedState.getAngle();
+		mCenterPaintColor.setColor(calculateColor(mAngle));
 	}
 
 	protected static class SavedState extends BaseSavedState {
@@ -265,15 +270,15 @@ public class ColorPicker extends View {
 		private final float positionX;
 		private final float positionY;
 		private final int boolFirstTime;
-		private final float unit;
+		private final float angle;
 
 		private SavedState(Parcelable superState, float positionX,
-				float positionY, int boolFirstTime, float unit) {
+				float positionY, int boolFirstTime, float angle) {
 			super(superState);
 			this.positionX = positionX;
 			this.positionY = positionY;
 			this.boolFirstTime = boolFirstTime;
-			this.unit = unit;
+			this.angle = angle;
 		}
 
 		private SavedState(Parcel in) {
@@ -281,7 +286,7 @@ public class ColorPicker extends View {
 			positionX = in.readFloat();
 			positionY = in.readFloat();
 			boolFirstTime = in.readInt();
-			unit = in.readFloat();
+			angle = in.readFloat();
 		}
 
 		public float getPositionX() {
@@ -300,8 +305,8 @@ public class ColorPicker extends View {
 			}
 		}
 
-		public float getUnit(){
-			return unit;
+		public float getAngle(){
+			return angle;
 		}
 
 		@Override
@@ -310,7 +315,7 @@ public class ColorPicker extends View {
 			destination.writeFloat(positionX);
 			destination.writeFloat(positionY);
 			destination.writeInt(boolFirstTime);
-			destination.writeFloat(unit);
+			destination.writeFloat(angle);
 		}
 
 		public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
