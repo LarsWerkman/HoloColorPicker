@@ -126,9 +126,6 @@ public class ColorPicker extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius,
-				mColorWheelRadius);
-
 		canvas.translate(mTranslationOffset, mTranslationOffset);
 		canvas.drawOval(mColorWheelRectangle, mColorWheelPaint);
 
@@ -149,6 +146,9 @@ public class ColorPicker extends View {
 
 		mTranslationOffset = min * 0.5f;
 		mColorWheelRadius = mTranslationOffset - mPointerSize;
+
+		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius,
+				mColorWheelRadius);
 	}
 
 	private int ave(int s, int d, float p) {
