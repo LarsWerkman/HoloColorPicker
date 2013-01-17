@@ -30,6 +30,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+/**
+ * Displays a holo-themed color picker.
+ *
+ * <p>
+ * Use {@link #getColor()} to retrieve the selected color.
+ * </p>
+ */
 public class ColorPicker extends View {
 	/*
 	 * Constants used to save/restore the instance state.
