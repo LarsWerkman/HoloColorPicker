@@ -42,13 +42,27 @@ public class ColorPicker extends View {
 	private PathMeasure mPathMeasure = new PathMeasure();
 	private float[] mPointerPosition = new float[2];
 	private boolean isFirstTime = true;
-	private float radians;
 	private int mWheelSize;
 	private int mPointerSize;
 	private RectF colorWheelRectangle = new RectF();
 	private static final float PI = 3.1415926f;
 	private boolean onPointer = false;
 	private int color;
+
+	/**
+	 * Number of pixels the origin of this view is moved in X- and Y-direction.
+	 *
+	 * <p>
+	 * We use the center of this (quadratic) View as origin of our internal coordinate system.
+	 * Android uses the upper left corner as origin for the View-specific coordinate system. So this
+	 * is the value we use to translate from one coordinate system to the other.
+	 * </p>
+	 *
+	 * <p>Note: (Re)calculated in {@link #onMeasure(int, int)}.</p>
+	 *
+	 * @see #onDraw(Canvas)
+	 */
+	private float mTranslationOffset;
 
 	/**
 	 * Radius of the color wheel in pixels.
@@ -107,11 +121,11 @@ public class ColorPicker extends View {
 		mCenterPath.addOval(colorWheelRectangle, Path.Direction.CW);
 		mPathMeasure.setPath(mCenterPath, true);
 
-		canvas.translate(radians, radians);
+		canvas.translate(mTranslationOffset, mTranslationOffset);
 		canvas.drawOval(colorWheelRectangle, mPaint);
 
 		if (isFirstTime) {
-			mPointerPosition = findMinDistanceVector(0, (int) -radians);
+			mPointerPosition = findMinDistanceVector(0, (int) -mTranslationOffset);
 			if (isInEditMode()) {
 				mPointerPosition[0] = 0;
 				mPointerPosition[1] = -mColorWheelRadius;
@@ -133,8 +147,8 @@ public class ColorPicker extends View {
 		int min = Math.min(width, height);
 		setMeasuredDimension(min, min);
 
-		radians = ((min - getPaddingLeft() - getPaddingRight()) * 0.5f);
-		mColorWheelRadius = radians - mPointerSize;
+		mTranslationOffset = ((min - getPaddingLeft() - getPaddingRight()) * 0.5f);
+		mColorWheelRadius = mTranslationOffset - mPointerSize;
 	}
 
 	private int ave(int s, int d, float p) {
@@ -185,19 +199,19 @@ public class ColorPicker extends View {
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			if ((x - radians) >= (mPointerPosition[0] - 48)
-					&& (x - radians) <= (mPointerPosition[0] + 48)
-					&& (y - radians) >= (mPointerPosition[1] - 48)
-					&& (y - radians) <= (mPointerPosition[1] + 48)) {
+			if ((x - mTranslationOffset) >= (mPointerPosition[0] - 48)
+					&& (x - mTranslationOffset) <= (mPointerPosition[0] + 48)
+					&& (y - mTranslationOffset) >= (mPointerPosition[1] - 48)
+					&& (y - mTranslationOffset) <= (mPointerPosition[1] + 48)) {
 				onPointer = true;
 				invalidate();
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (onPointer) {
-				mPointerPosition = findMinDistanceVector((int) (x - radians),
-						((int) (y - radians)));
-				float angle = (float) java.lang.Math.atan2((y - radians), (x - radians));
+				mPointerPosition = findMinDistanceVector((int) (x - mTranslationOffset),
+						((int) (y - mTranslationOffset)));
+				float angle = (float) java.lang.Math.atan2((y - mTranslationOffset), (x - mTranslationOffset));
 				float unit = angle / (2 * PI);
 				if (unit < 0) {
 					unit += 1;
