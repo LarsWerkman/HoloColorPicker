@@ -147,7 +147,7 @@ public class ColorPicker extends View {
 		int min = Math.min(width, height);
 		setMeasuredDimension(min, min);
 
-		mTranslationOffset = ((min - getPaddingLeft() - getPaddingRight()) * 0.5f);
+		mTranslationOffset = min * 0.5f;
 		mColorWheelRadius = mTranslationOffset - mPointerSize;
 	}
 
