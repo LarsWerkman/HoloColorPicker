@@ -24,19 +24,23 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
-import android.os.Parcel;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class ColorPicker extends View {
+	/*
+	 * Constants used to save/restore the instance state.
+	 */
+	private static final String STATE_PARENT = "parent";
+	private static final String STATE_ANGLE = "angle";
+
 	private Paint mPaint;
 	private Paint mCenterPaint;
 	private Paint mCenterPaintColor;
 	private int[] mColors;
-	private float[] mPointerPosition = new float[2];
-	private boolean isFirstTime = true;
 	private int mWheelSize;
 	private int mPointerSize;
 	private RectF colorWheelRectangle = new RectF();
@@ -112,6 +116,9 @@ public class ColorPicker extends View {
 
 		mCenterPaintColor = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mCenterPaintColor.setStrokeWidth(5);
+
+		mAngle = (float) (-Math.PI / 2);
+		mCenterPaintColor.setColor(calculateColor(mAngle));
 	}
 
 	@Override
@@ -122,19 +129,10 @@ public class ColorPicker extends View {
 		canvas.translate(mTranslationOffset, mTranslationOffset);
 		canvas.drawOval(colorWheelRectangle, mPaint);
 
-		if (isFirstTime) {
-			mAngle = (float) (-Math.PI / 2);
-			mPointerPosition = calculatePointerPosition(mAngle);
-			if (isInEditMode()) {
-				mPointerPosition[0] = 0;
-				mPointerPosition[1] = -mColorWheelRadius;
-			}
-			mCenterPaintColor.setColor(calculateColor(mAngle));
-			isFirstTime = false;
-		}
-		canvas.drawCircle(mPointerPosition[0], mPointerPosition[1],
+		float[] pointerPosition = calculatePointerPosition(mAngle);
+		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
 				mPointerSize, mCenterPaint);
-		canvas.drawCircle(mPointerPosition[0], mPointerPosition[1],
+		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
 				(float) (mPointerSize / 1.2), mCenterPaintColor);
 	}
 
@@ -202,8 +200,9 @@ public class ColorPicker extends View {
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			if (x >= (mPointerPosition[0] - 48) && x <= (mPointerPosition[0] + 48)
-					&& y >= (mPointerPosition[1] - 48) && y <= (mPointerPosition[1] + 48)) {
+			float[] pointerPosition = calculatePointerPosition(mAngle);
+			if (x >= (pointerPosition[0] - 48) && x <= (pointerPosition[0] + 48)
+					&& y >= (pointerPosition[1] - 48) && y <= (pointerPosition[1] + 48)) {
 				onPointer = true;
 				invalidate();
 			}
@@ -211,7 +210,6 @@ public class ColorPicker extends View {
 		case MotionEvent.ACTION_MOVE:
 			if (onPointer) {
 				mAngle = (float) java.lang.Math.atan2(y, x);
-				mPointerPosition = calculatePointerPosition(mAngle);
 				mCenterPaintColor.setColor(calculateColor(mAngle));
 				invalidate();
 			}
@@ -241,95 +239,22 @@ public class ColorPicker extends View {
 	@Override
 	protected Parcelable onSaveInstanceState() {
 		Parcelable superState = super.onSaveInstanceState();
-		return new SavedState(superState, mPointerPosition[0],
-				mPointerPosition[1], booleanToInt(isFirstTime), mAngle);
-	}
 
-	private int booleanToInt(boolean bool) {
-		if (bool) {
-			return 0;
-		} else {
-			return 1;
-		}
+		Bundle state = new Bundle();
+		state.putParcelable(STATE_PARENT, superState);
+		state.putFloat(STATE_ANGLE, mAngle);
+
+		return state;
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Parcelable state) {
-		SavedState savedState = (SavedState) state;
-		super.onRestoreInstanceState(savedState.getSuperState());
+		Bundle savedState = (Bundle) state;
 
-		mPointerPosition[0] = savedState.getPositionX();
-		mPointerPosition[1] = savedState.getPositionY();
-		isFirstTime = savedState.getBoolFirstTime();
-		mAngle = savedState.getAngle();
+		Parcelable superState = savedState.getParcelable(STATE_PARENT);
+		super.onRestoreInstanceState(superState);
+
+		mAngle = savedState.getFloat(STATE_ANGLE);
 		mCenterPaintColor.setColor(calculateColor(mAngle));
 	}
-
-	protected static class SavedState extends BaseSavedState {
-
-		private final float positionX;
-		private final float positionY;
-		private final int boolFirstTime;
-		private final float angle;
-
-		private SavedState(Parcelable superState, float positionX,
-				float positionY, int boolFirstTime, float angle) {
-			super(superState);
-			this.positionX = positionX;
-			this.positionY = positionY;
-			this.boolFirstTime = boolFirstTime;
-			this.angle = angle;
-		}
-
-		private SavedState(Parcel in) {
-			super(in);
-			positionX = in.readFloat();
-			positionY = in.readFloat();
-			boolFirstTime = in.readInt();
-			angle = in.readFloat();
-		}
-
-		public float getPositionX() {
-			return positionX;
-		}
-
-		public float getPositionY() {
-			return positionY;
-		}
-
-		public boolean getBoolFirstTime() {
-			if(boolFirstTime == 0){
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		public float getAngle(){
-			return angle;
-		}
-
-		@Override
-		public void writeToParcel(Parcel destination, int flags) {
-			super.writeToParcel(destination, flags);
-			destination.writeFloat(positionX);
-			destination.writeFloat(positionY);
-			destination.writeInt(boolFirstTime);
-			destination.writeFloat(angle);
-		}
-
-		public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
-
-			public SavedState createFromParcel(Parcel in) {
-				return new SavedState(in);
-			}
-
-			public SavedState[] newArray(int size) {
-				return new SavedState[size];
-			}
-
-		};
-
-	}
-
 }
