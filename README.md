@@ -1,29 +1,55 @@
 <h1>Android Holo ColorPicker</h1>
 
-A Holo themed colorpicker designed by Marie Schweiz.
+Marie Schweiz made a beautifull new design for the Holo ColorPicker which added a lot of new functionality.
 
-![image](https://lh3.googleusercontent.com/-RzpEyLl-1xM/UOMyztql1gI/AAAAAAAAATs/UKBuqZZtaZw//HoloColorPickerFramed1.png)
-![image](https://lh4.googleusercontent.com/-sXAPd8onJ_8/UOMyzjA6c4I/AAAAAAAAATo/DY4kIzo7TtU//HoloColorPickerFramed2.png)
+You can now set the Saturation and Value of a color.
+Also its possible to set the Opacity for a color.
+
+You can also set the last selected color and see the difference with the new selected color.
+
+![image](https://lh6.googleusercontent.com/-Rn5TDr6QoG4/UQk8OPpsPEI/AAAAAAAAAX0/TKlibuBjupo//framed_HoloColorPicker.png)
+![image](https://lh3.googleusercontent.com/-2JFzIZ4ote8/UQk8OCCJH9I/AAAAAAAAAX4/dO5i-qWnhUs//framed_HoloColorPicker2.png)
 
 
 <h2>Documentation</h2>
-Add this to your xml
+To add the ColorPicker to your layout add this to your xml
 
 	<com.larswerkman.colorpicker.ColorPicker
         android:id="@+id/picker"
-                android:layout_width="285dp"
-        android:layout_height="290dp"/>
+                android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
         
-To change the thickness of the wheel and the pointer you can add this.
- 
- 	app:wheel_size="2"
-    app:pointer_size="4"
+        
+To add a Saturation/Value bar to your layout add this to your xml
 
-To get the color of the colorpicker
+    <com.larswerkman.colorpicker.SVBar
+        android:id="@+id/svbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+        
+The same goes for the Opacity bar
 
-	ColorPicker picker = (ColorPicker) findViewById(R.id.picker);
-	
+	<com.larswerkman.colorpicker.OpacityBar
+        android:id="@+id/opacitybar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+To connect the bars with the colorpicker and to get the selected color.
+
+	ColorPicker picker = (ColorPicker)
+	     findViewById(R.id.picker);
+	SVBar svBar = (SVBar) findViewById(R.id.svbar);
+	OpacityBar opacityBar = (OpacityBar)
+	     findViewById(R.id.opacitybar);
+		
+	picker.addSVBar(svBar);
+	picker.addOpacityBar(opacityBar);
+
+	//To get the color
 	picker.getColor();
+	
+	//To set the old selected color u can do it like this
+	picker.setOldCenterColor(picker.getColor());
 	
 <H2>License</H2>
 	
