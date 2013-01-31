@@ -13,44 +13,42 @@ You can also set the last selected color and see the difference with the new sel
 
 <h2>Documentation</h2>
 To add the ColorPicker to your layout add this to your xml
-
-	<com.larswerkman.colorpicker.ColorPicker
-        android:id="@+id/picker"
-                android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-        
+```xml
+<com.larswerkman.colorpicker.ColorPicker
+    android:id="@+id/picker"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+```       
         
 To add a Saturation/Value bar to your layout add this to your xml
-
-    <com.larswerkman.colorpicker.SVBar
-        android:id="@+id/svbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-        
+```xml
+<com.larswerkman.colorpicker.SVBar
+    android:id="@+id/svbar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+```       
 The same goes for the Opacity bar
-
-	<com.larswerkman.colorpicker.OpacityBar
-        android:id="@+id/opacitybar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
+```xml
+<com.larswerkman.colorpicker.OpacityBar
+    android:id="@+id/opacitybar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+```
 To connect the bars with the colorpicker and to get the selected color.
-
-	ColorPicker picker = (ColorPicker)
-	     findViewById(R.id.picker);
-	SVBar svBar = (SVBar) findViewById(R.id.svbar);
-	OpacityBar opacityBar = (OpacityBar)
-	     findViewById(R.id.opacitybar);
-		
-	picker.addSVBar(svBar);
-	picker.addOpacityBar(opacityBar);
-
-	//To get the color
-	picker.getColor();
+```java
+ColorPicker picker = (ColorPicker) findViewById(R.id.picker);
+SVBar svBar = (SVBar) findViewById(R.id.svbar);
+OpacityBar opacityBar = (OpacityBar) findViewById(R.id.opacitybar);
 	
-	//To set the old selected color u can do it like this
-	picker.setOldCenterColor(picker.getColor());
-	
+picker.addSVBar(svBar);
+picker.addOpacityBar(opacityBar);
+
+//To get the color
+picker.getColor();
+
+//To set the old selected color u can do it like this
+picker.setOldCenterColor(picker.getColor());
+```	
 <H2>License</H2>
 	
  	 Copyright 2012 Lars Werkman
