@@ -59,7 +59,13 @@ public class ColorPicker extends View {
 	 */
 	private static final int[] COLORS = new int[] { 0xFFFF0000, 0xFFFF00FF,
 			0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
-
+	
+	public static interface OnColorChangedListener {
+		public abstract void onColorChanged(ColorPicker view, int newColor);
+	}
+	
+	private OnColorChangedListener onColorChangedListener;
+	
 	/**
 	 * {@code Paint} instance used to draw the color wheel.
 	 */
@@ -264,6 +270,14 @@ public class ColorPicker extends View {
 		mCenterHaloPaint.setColor(Color.BLACK);
 		mCenterHaloPaint.setAlpha(0x00);
 
+	}
+	
+	public void setOnColorChangedListener(OnColorChangedListener onColorChangedListener) {
+		this.onColorChangedListener = onColorChangedListener;
+	}
+	
+	public OnColorChangedListener getOnColorChangedListener() {
+		return onColorChangedListener;
 	}
 
 	@Override
@@ -614,6 +628,9 @@ public class ColorPicker extends View {
 			mUserIsMovingPointer = false;
 			mCenterHaloPaint.setAlpha(0x00);
 			invalidate();
+			if (onColorChangedListener != null) {
+				onColorChangedListener.onColorChanged(this, getColor());
+			}
 			break;
 		}
 		return true;
