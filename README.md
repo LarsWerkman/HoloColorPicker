@@ -50,6 +50,9 @@ picker.getColor();
 
 //To set the old selected color u can do it like this
 picker.setOldCenterColor(picker.getColor());
+// adds listener to the colorpicker which is implemented
+//in the activity
+picker.setOnColorChangedListener(this);
 ```	
 <H2>License</H2>
 	
