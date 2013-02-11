@@ -194,6 +194,11 @@ public class ColorPicker extends View {
 	 * {@code OpacityBar} instance used to control the Opacity bar.
 	 */
 	private OpacityBar mOpacityBar = null;
+	
+	/**
+	 * {@code onColorChangedListener} instance of the onColorChangedListener
+	 */
+	private OnColorChangedListener onColorChangedListener;
 
 	public ColorPicker(Context context) {
 		super(context);
@@ -208,6 +213,35 @@ public class ColorPicker extends View {
 	public ColorPicker(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init(attrs, defStyle);
+	}
+	
+	
+	/**
+	 * An interface that is called whenever the color is changed.
+	 * Currently it is always called when the color is changes.
+	 * @author lars
+	 *
+	 */
+	public interface OnColorChangedListener {
+		public void onColorChanged(int color);
+	}
+	
+	/**
+	 * Set a onColorChangedListener
+	 * 
+	 * @param {@code OnColorChangedListener}
+	 */
+	public void setOnColorChangedListener(OnColorChangedListener listener){
+		this.onColorChangedListener = listener;
+	}
+	
+	/**
+	 * Gets the onColorChangedListener
+	 * 
+	 * @return {@code OnColorChangedListener}
+	 */
+	public OnColorChangedListener getOnColorChangedListener(){
+		return this.onColorChangedListener;
 	}
 
 	private void init(AttributeSet attrs, int defStyle) {
@@ -299,20 +333,40 @@ public class ColorPicker extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		int height = getDefaultSize(getSuggestedMinimumHeight(),
-				heightMeasureSpec);
-		int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-		int min = Math.min(width, height);
-		setMeasuredDimension(min, min);
+		final int intrinsicSize = 2 * (mColorWheelRadius + mColorPointerHaloRadius);
 
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+	    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+	    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+	    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+	    int width;
+	    int height;
+
+	    if (widthMode == MeasureSpec.EXACTLY) {
+	        width = widthSize;
+	    } else if (widthMode == MeasureSpec.AT_MOST) {
+	        width = Math.min(intrinsicSize, widthSize);
+	    } else {
+	        width = intrinsicSize;
+	    }
+
+	    if (heightMode == MeasureSpec.EXACTLY) {
+	        height = heightSize;
+	    } else if (heightMode == MeasureSpec.AT_MOST) {
+	        height = Math.min(intrinsicSize, heightSize);
+	    } else {
+	        height = intrinsicSize;
+	    }
+
+	    int min = Math.min(width, height);
+	    setMeasuredDimension(min, min);
 		mTranslationOffset = min * 0.5f;
 
 		// fill the rectangle instances.
-		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius,
-				mColorWheelRadius, mColorWheelRadius);
+		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius, mColorWheelRadius);
 
-		mCenterRectangle.set(-mColorCenterRadius, -mColorCenterRadius,
-				mColorCenterRadius, mColorCenterRadius);
+		mCenterRectangle.set(-mColorCenterRadius, -mColorCenterRadius, mColorCenterRadius, mColorCenterRadius);
 	}
 
 	private int ave(int s, int d, float p) {
@@ -674,6 +728,9 @@ public class ColorPicker extends View {
 		if(mCenterOldColor == 0){
 			mCenterOldColor = color;
 			mCenterOldPaint.setColor(color);
+		}
+		if(onColorChangedListener != null){
+			onColorChangedListener.onColorChanged(color);
 		}
 		invalidate();
 	}
