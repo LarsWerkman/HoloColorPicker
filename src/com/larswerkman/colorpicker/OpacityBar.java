@@ -33,6 +33,7 @@ public class OpacityBar extends View {
 	 * The length of the bar.
 	 */
 	private int mBarLength;
+	private int mPreferredBarLength;
 
 	/**
 	 * The radius of the pointer.
@@ -133,6 +134,7 @@ public class OpacityBar extends View {
 				b.getDimensionPixelSize(R.dimen.bar_thickness));
 		mBarLength = a.getDimensionPixelSize(R.styleable.ColorBars_bar_length,
 				b.getDimensionPixelSize(R.dimen.bar_length));
+		mPreferredBarLength = mBarLength;
 		mBarPointerRadius = a.getDimensionPixelSize(
 				R.styleable.ColorBars_bar_pointer_radius,
 				b.getDimensionPixelSize(R.dimen.bar_pointer_radius));
@@ -165,16 +167,50 @@ public class OpacityBar extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		final int intrinsicSize = mPreferredBarLength
+				+ (mBarPointerHaloRadius * 2);
+
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+
+		int width;
+		if (widthMode == MeasureSpec.EXACTLY) {
+			width = widthSize;
+		} else if (widthMode == MeasureSpec.AT_MOST) {
+			width = Math.min(intrinsicSize, widthSize);
+		} else {
+			width = intrinsicSize;
+		}
+
+		mBarLength = width - (mBarPointerHaloRadius * 2);
 		setMeasuredDimension((mBarLength + (mBarPointerHaloRadius * 2)),
 				(mBarPointerHaloRadius * 2));
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		mBarLength = w - (mBarPointerHaloRadius * 2);
 
 		// Fill the rectangle instance.
 		mBarRect.set(mBarPointerHaloRadius,
 				(mBarPointerHaloRadius - (mBarThickness / 2)),
 				(mBarLength + (mBarPointerHaloRadius)),
 				(mBarPointerHaloRadius + (mBarThickness / 2)));
+
+		// Update variables that depend of mBarLength.
+		shader = new LinearGradient(mBarPointerHaloRadius, 0,
+				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+						Color.HSVToColor(0x00, mHSVColor),
+						Color.HSVToColor(0xFF, mHSVColor) }, null,
+				Shader.TileMode.CLAMP);
+		mBarPaint.setShader(shader);
+		mBarPointerPosition = mBarLength + mBarPointerHaloRadius;
+		mPosToOpacFactor = 0xFF / ((float) mBarLength);
+		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
 	}
 
+	@Override
 	protected void onDraw(Canvas canvas) {
 		// Draw the bar.
 		canvas.drawRect(mBarRect, mBarPaint);

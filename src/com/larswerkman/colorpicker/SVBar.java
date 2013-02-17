@@ -49,6 +49,7 @@ public class SVBar extends View {
 	 * The length of the bar.
 	 */
 	private int mBarLength;
+	private int mPreferredBarLength;
 
 	/**
 	 * The radius of the pointer.
@@ -149,6 +150,7 @@ public class SVBar extends View {
 				b.getDimensionPixelSize(R.dimen.bar_thickness));
 		mBarLength = a.getDimensionPixelSize(R.styleable.ColorBars_bar_length,
 				b.getDimensionPixelSize(R.dimen.bar_length));
+		mPreferredBarLength = mBarLength;
 		mBarPointerRadius = a.getDimensionPixelSize(
 				R.styleable.ColorBars_bar_pointer_radius,
 				b.getDimensionPixelSize(R.dimen.bar_pointer_radius));
@@ -183,16 +185,49 @@ public class SVBar extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		final int intrinsicSize = mPreferredBarLength
+				+ (mBarPointerHaloRadius * 2);
+
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+
+		int width;
+		if (widthMode == MeasureSpec.EXACTLY) {
+			width = widthSize;
+		} else if (widthMode == MeasureSpec.AT_MOST) {
+			width = Math.min(intrinsicSize, widthSize);
+		} else {
+			width = intrinsicSize;
+		}
+
+		mBarLength = width - (mBarPointerHaloRadius * 2);
 		setMeasuredDimension((mBarLength + (mBarPointerHaloRadius * 2)),
 				(mBarPointerHaloRadius * 2));
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		mBarLength = w - (mBarPointerHaloRadius * 2);
 
 		// Fill the rectangle instance.
 		mBarRect.set(mBarPointerHaloRadius,
 				(mBarPointerHaloRadius - (mBarThickness / 2)),
 				(mBarLength + (mBarPointerHaloRadius)),
 				(mBarPointerHaloRadius + (mBarThickness / 2)));
+
+		// Update variables that depend of mBarLength.
+		shader = new LinearGradient(mBarPointerHaloRadius, 0,
+				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+						0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
+				null, Shader.TileMode.CLAMP);
+		mBarPaint.setShader(shader);
+		mBarPointerPosition = (mBarLength / 2) + mBarPointerHaloRadius;
+		mPosToSVFactor = 1 / ((float) mBarLength / 2);
+		mSVToPosFactor = ((float) mBarLength / 2) / 1;
 	}
 
+	@Override
 	protected void onDraw(Canvas canvas) {
 		// Draw the bar.
 		canvas.drawRect(mBarRect, mBarPaint);
@@ -214,10 +249,10 @@ public class SVBar extends View {
 		case MotionEvent.ACTION_DOWN:
 			// Check whether the user pressed on the pointer
 			if (x >= (mBarPointerHaloRadius)
-					&& x <= (mBarPointerHaloRadius + mBarLength)
-					&& y >= 0 && y <= (mBarPointerHaloRadius * 2)) {
+					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
+					&& y <= (mBarPointerHaloRadius * 2)) {
 				mBarPointerPosition = (int) x;
-				calculateColor((int)x);
+				calculateColor((int) x);
 				mBarPointerPaint.setColor(mColor);
 				mIsMovingPointer = true;
 				invalidate();
@@ -236,7 +271,7 @@ public class SVBar extends View {
 						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
-				} else if(x < mBarPointerHaloRadius){
+				} else if (x < mBarPointerHaloRadius) {
 					mBarPointerPosition = mBarPointerHaloRadius;
 					mColor = Color.WHITE;
 					mBarPointerPaint.setColor(mColor);
@@ -245,7 +280,7 @@ public class SVBar extends View {
 						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
-				} else if(x > (mBarPointerHaloRadius + mBarLength)){
+				} else if (x > (mBarPointerHaloRadius + mBarLength)) {
 					mBarPointerPosition = mBarPointerHaloRadius + mBarLength;
 					mColor = Color.BLACK;
 					mBarPointerPaint.setColor(mColor);
