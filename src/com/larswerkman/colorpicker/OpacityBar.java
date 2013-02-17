@@ -190,6 +190,7 @@ public class OpacityBar extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
+		int oldBarLength = mBarLength;
 		mBarLength = w - (mBarPointerHaloRadius * 2);
 
 		// Fill the rectangle instance.
@@ -205,7 +206,7 @@ public class OpacityBar extends View {
 						Color.HSVToColor(0xFF, mHSVColor) }, null,
 				Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
-		mBarPointerPosition = mBarLength + mBarPointerHaloRadius;
+		mBarPointerPosition = mBarPointerPosition * (mBarLength / oldBarLength);
 		mPosToOpacFactor = 0xFF / ((float) mBarLength);
 		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
 	}

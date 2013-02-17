@@ -208,6 +208,7 @@ public class SVBar extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
+		int oldBarLength = mBarLength;
 		mBarLength = w - (mBarPointerHaloRadius * 2);
 
 		// Fill the rectangle instance.
@@ -222,7 +223,7 @@ public class SVBar extends View {
 						0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
 				null, Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
-		mBarPointerPosition = (mBarLength / 2) + mBarPointerHaloRadius;
+		mBarPointerPosition = mBarPointerPosition * (mBarLength / oldBarLength);
 		mPosToSVFactor = 1 / ((float) mBarLength / 2);
 		mSVToPosFactor = ((float) mBarLength / 2) / 1;
 	}

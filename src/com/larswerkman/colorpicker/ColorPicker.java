@@ -458,7 +458,6 @@ public class ColorPicker extends View {
 
 		// check if the instance isn't null
 		if (mSVbar != null) {
-
 			// the array mHSV will be filled with the HSV values of the color.
 			Color.colorToHSV(color, mHSV);
 			mSVbar.setColor(mColor);
