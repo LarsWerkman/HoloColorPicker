@@ -228,11 +228,12 @@ public class SVBar extends View {
 		float[] hsvColor = new float[3];
 		Color.colorToHSV(mColor, hsvColor);
 		if (hsvColor[1] < hsvColor[2]) {
-			mBarPointerPosition = round((mSVToPosFactor * hsvColor[1])
+			mBarPointerPosition = Math.round((mSVToPosFactor * hsvColor[1])
 					+ mBarPointerHaloRadius);
 		} else {
-			mBarPointerPosition = round((mSVToPosFactor * (1 - hsvColor[2]))
-					+ mBarPointerHaloRadius + (mBarLength / 2));
+			mBarPointerPosition = Math
+					.round((mSVToPosFactor * (1 - hsvColor[2]))
+							+ mBarPointerHaloRadius + (mBarLength / 2));
 		}
 	}
 
@@ -260,8 +261,8 @@ public class SVBar extends View {
 			if (x >= (mBarPointerHaloRadius)
 					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
 					&& y <= (mBarPointerHaloRadius * 2)) {
-				mBarPointerPosition = round(x);
-				calculateColor(round(x));
+				mBarPointerPosition = Math.round(x);
+				calculateColor(Math.round(x));
 				mBarPointerPaint.setColor(mColor);
 				mIsMovingPointer = true;
 				invalidate();
@@ -272,8 +273,8 @@ public class SVBar extends View {
 				// Move the the pointer on the bar.
 				if (x >= mBarPointerHaloRadius
 						&& x <= (mBarPointerHaloRadius + mBarLength)) {
-					mBarPointerPosition = round(x);
-					calculateColor(round(x));
+					mBarPointerPosition = Math.round(x);
+					calculateColor(Math.round(x));
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
@@ -315,7 +316,7 @@ public class SVBar extends View {
 	 *            float between 0 > 1
 	 */
 	public void setSaturation(float saturation) {
-		mBarPointerPosition = round((mSVToPosFactor * saturation)
+		mBarPointerPosition = Math.round((mSVToPosFactor * saturation)
 				+ mBarPointerHaloRadius);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
@@ -335,7 +336,7 @@ public class SVBar extends View {
 	 *            float between 0 > 1
 	 */
 	public void setValue(float value) {
-		mBarPointerPosition = round((mSVToPosFactor * (1 - value))
+		mBarPointerPosition = Math.round((mSVToPosFactor * (1 - value))
 				+ mBarPointerHaloRadius + (mBarLength / 2));
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
@@ -395,16 +396,6 @@ public class SVBar extends View {
 		} else if (x == mBarPointerHaloRadius + mBarLength) {
 			mColor = Color.BLACK;
 		}
-	}
-
-	/**
-	 * Rounds a float to an integer using (int) (f + .5).
-	 * 
-	 * @param f
-	 * @return the rounded integer
-	 */
-	private int round(float f) {
-		return (int) (f + .5);
 	}
 
 	/**

@@ -207,8 +207,8 @@ public class OpacityBar extends View {
 		mBarPaint.setShader(shader);
 		mPosToOpacFactor = 0xFF / ((float) mBarLength);
 		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
-		mBarPointerPosition = round((mOpacToPosFactor * Color.alpha(mColor)))
-				+ mBarPointerHaloRadius;
+		mBarPointerPosition = Math.round((mOpacToPosFactor * Color
+				.alpha(mColor))) + mBarPointerHaloRadius;
 	}
 
 	@Override
@@ -235,8 +235,8 @@ public class OpacityBar extends View {
 			if (x >= (mBarPointerHaloRadius)
 					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
 					&& y <= (mBarPointerHaloRadius * 2)) {
-				mBarPointerPosition = round(x);
-				calculateColor(round(x));
+				mBarPointerPosition = Math.round(x);
+				calculateColor(Math.round(x));
 				mBarPointerPaint.setColor(mColor);
 				mIsMovingPointer = true;
 				invalidate();
@@ -247,8 +247,8 @@ public class OpacityBar extends View {
 				// Move the the pointer on the bar.
 				if (x >= mBarPointerHaloRadius
 						&& x <= (mBarPointerHaloRadius + mBarLength)) {
-					mBarPointerPosition = round(x);
-					calculateColor(round(x));
+					mBarPointerPosition = Math.round(x);
+					calculateColor(Math.round(x));
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
@@ -309,7 +309,7 @@ public class OpacityBar extends View {
 	 *            float between 0 > 255
 	 */
 	public void setOpacity(int opacity) {
-		mBarPointerPosition = round((mOpacToPosFactor * opacity))
+		mBarPointerPosition = Math.round((mOpacToPosFactor * opacity))
 				+ mBarPointerHaloRadius;
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
@@ -325,7 +325,8 @@ public class OpacityBar extends View {
 	 * @return The int value of the currently selected opacity.
 	 */
 	public int getOpacity() {
-		int opacity = round((mPosToOpacFactor * (mBarPointerPosition - mBarPointerHaloRadius)));
+		int opacity = Math
+				.round((mPosToOpacFactor * (mBarPointerPosition - mBarPointerHaloRadius)));
 		if (opacity < 5) {
 			return 0x00;
 		} else if (opacity > 250) {
@@ -344,24 +345,15 @@ public class OpacityBar extends View {
 	private void calculateColor(int x) {
 		if (x >= mBarPointerHaloRadius
 				&& x <= (mBarPointerHaloRadius + mBarLength)) {
-			mColor = Color.HSVToColor(round(mPosToOpacFactor
-					* (x - mBarPointerHaloRadius)), mHSVColor);
+			mColor = Color.HSVToColor(
+					Math.round(mPosToOpacFactor * (x - mBarPointerHaloRadius)),
+					mHSVColor);
 		}
 		if (Color.alpha(mColor) > 250) {
 			mColor = Color.HSVToColor(mHSVColor);
 		} else if (Color.alpha(mColor) < 5) {
 			mColor = Color.TRANSPARENT;
 		}
-	}
-
-	/**
-	 * Rounds a float to an integer using (int) (f + .5).
-	 * 
-	 * @param f
-	 * @return the rounded integer
-	 */
-	private int round(float f) {
-		return (int) (f + .5);
 	}
 
 	/**
