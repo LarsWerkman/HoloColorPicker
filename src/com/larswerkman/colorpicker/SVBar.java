@@ -161,12 +161,6 @@ public class SVBar extends View {
 
 		a.recycle();
 
-		shader = new LinearGradient(mBarPointerHaloRadius, 0,
-				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
-						0xffffffff, 0xff81ff00, 0xff000000 }, null,
-				Shader.TileMode.CLAMP);
-		Color.colorToHSV(0xff81ff00, mHSVColor);
-
 		mBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mBarPaint.setShader(shader);
 
@@ -218,10 +212,19 @@ public class SVBar extends View {
 				(mBarPointerHaloRadius + (mBarThickness / 2)));
 
 		// Update variables that depend of mBarLength.
-		shader = new LinearGradient(mBarPointerHaloRadius, 0,
-				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
-						0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
-				null, Shader.TileMode.CLAMP);
+        if(!isInEditMode()){
+            shader = new LinearGradient(mBarPointerHaloRadius, 0,
+                                        (mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+                                            0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
+                                        null, Shader.TileMode.CLAMP);
+        } else {
+            shader = new LinearGradient(mBarPointerHaloRadius, 0,
+                                        (mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+                                            0xffffffff, 0xff81ff00, 0xff000000 }, null,
+                                        Shader.TileMode.CLAMP);
+            Color.colorToHSV(0xff81ff00, mHSVColor);
+        }
+        
 		mBarPaint.setShader(shader);
 		mPosToSVFactor = 1 / ((float) mBarLength / 2);
 		mSVToPosFactor = ((float) mBarLength / 2) / 1;
@@ -235,6 +238,9 @@ public class SVBar extends View {
 					.round((mSVToPosFactor * (1 - hsvColor[2]))
 							+ mBarPointerHaloRadius + (mBarLength / 2));
 		}
+        if(isInEditMode()){
+            mBarPointerPosition = (mBarLength /2) + mBarPointerHaloRadius;
+        }
 	}
 
 	@Override

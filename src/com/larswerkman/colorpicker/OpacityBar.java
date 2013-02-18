@@ -144,11 +144,6 @@ public class OpacityBar extends View {
 
 		a.recycle();
 
-		shader = new LinearGradient(mBarPointerHaloRadius, 0,
-				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
-						0x0081ff00, 0xff81ff00 }, null, Shader.TileMode.CLAMP);
-		Color.colorToHSV(0xff81ff00, mHSVColor);
-
 		mBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mBarPaint.setShader(shader);
 
@@ -199,16 +194,27 @@ public class OpacityBar extends View {
 				(mBarPointerHaloRadius + (mBarThickness / 2)));
 
 		// Update variables that depend of mBarLength.
-		shader = new LinearGradient(mBarPointerHaloRadius, 0,
-				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
-						Color.HSVToColor(0x00, mHSVColor),
-						Color.HSVToColor(0xFF, mHSVColor) }, null,
-				Shader.TileMode.CLAMP);
+        if(!isInEditMode()){
+            shader = new LinearGradient(mBarPointerHaloRadius, 0,
+                                        (mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+                                            Color.HSVToColor(0x00, mHSVColor),
+                                            Color.HSVToColor(0xFF, mHSVColor) }, null,
+                                        Shader.TileMode.CLAMP);
+        } else {
+            shader = new LinearGradient(mBarPointerHaloRadius, 0,
+                                        (mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+                                            0x0081ff00, 0xff81ff00 }, null, Shader.TileMode.CLAMP);
+            Color.colorToHSV(0xff81ff00, mHSVColor);
+        }
 		mBarPaint.setShader(shader);
 		mPosToOpacFactor = 0xFF / ((float) mBarLength);
 		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
-		mBarPointerPosition = Math.round((mOpacToPosFactor * Color
-				.alpha(mColor))) + mBarPointerHaloRadius;
+        if(!isInEditMode()){
+            mBarPointerPosition = Math.round((mOpacToPosFactor * Color
+                                              .alpha(mColor))) + mBarPointerHaloRadius;
+        } else {
+            mBarPointerPosition = mBarLength + mBarPointerHaloRadius;
+        }
 	}
 
 	@Override
