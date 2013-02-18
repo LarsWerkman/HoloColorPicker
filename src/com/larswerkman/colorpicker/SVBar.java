@@ -37,8 +37,9 @@ public class SVBar extends View {
 	 * Constants used to save/restore the instance state.
 	 */
 	private static final String STATE_PARENT = "parent";
-	private static final String STATE_POSITION = "position";
 	private static final String STATE_COLOR = "color";
+	private static final String STATE_SATURATION = "saturation";
+	private static final String STATE_VALUE = "value";
 
 	/**
 	 * The thickness of the bar.
@@ -208,7 +209,6 @@ public class SVBar extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		int oldBarLength = mBarLength;
 		mBarLength = w - (mBarPointerHaloRadius * 2);
 
 		// Fill the rectangle instance.
@@ -223,9 +223,17 @@ public class SVBar extends View {
 						0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
 				null, Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
-		mBarPointerPosition = mBarPointerPosition * (mBarLength / oldBarLength);
 		mPosToSVFactor = 1 / ((float) mBarLength / 2);
 		mSVToPosFactor = ((float) mBarLength / 2) / 1;
+		float[] hsvColor = new float[3];
+		Color.colorToHSV(mColor, hsvColor);
+		if (hsvColor[1] < hsvColor[2]) {
+			mBarPointerPosition = round((mSVToPosFactor * hsvColor[1])
+					+ mBarPointerHaloRadius);
+		} else {
+			mBarPointerPosition = round((mSVToPosFactor * (1 - hsvColor[2]))
+					+ mBarPointerHaloRadius + (mBarLength / 2));
+		}
 	}
 
 	@Override
@@ -252,8 +260,8 @@ public class SVBar extends View {
 			if (x >= (mBarPointerHaloRadius)
 					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
 					&& y <= (mBarPointerHaloRadius * 2)) {
-				mBarPointerPosition = (int) x;
-				calculateColor((int) x);
+				mBarPointerPosition = round(x);
+				calculateColor(round(x));
 				mBarPointerPaint.setColor(mColor);
 				mIsMovingPointer = true;
 				invalidate();
@@ -264,8 +272,8 @@ public class SVBar extends View {
 				// Move the the pointer on the bar.
 				if (x >= mBarPointerHaloRadius
 						&& x <= (mBarPointerHaloRadius + mBarLength)) {
-					mBarPointerPosition = (int) x;
-					calculateColor((int) x);
+					mBarPointerPosition = round(x);
+					calculateColor(round(x));
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
@@ -307,7 +315,8 @@ public class SVBar extends View {
 	 *            float between 0 > 1
 	 */
 	public void setSaturation(float saturation) {
-		mBarPointerPosition = (int) ((mSVToPosFactor * saturation) + mBarPointerHaloRadius);
+		mBarPointerPosition = round((mSVToPosFactor * saturation)
+				+ mBarPointerHaloRadius);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
 		// Check whether the Saturation/Value bar is added to the ColorPicker
@@ -326,7 +335,7 @@ public class SVBar extends View {
 	 *            float between 0 > 1
 	 */
 	public void setValue(float value) {
-		mBarPointerPosition = (int) ((mSVToPosFactor * (1 - value))
+		mBarPointerPosition = round((mSVToPosFactor * (1 - value))
 				+ mBarPointerHaloRadius + (mBarLength / 2));
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
@@ -389,6 +398,16 @@ public class SVBar extends View {
 	}
 
 	/**
+	 * Rounds a float to an integer using (int) (f + .5).
+	 * 
+	 * @param f
+	 * @return the rounded integer
+	 */
+	private int round(float f) {
+		return (int) (f + .5);
+	}
+
+	/**
 	 * Get the currently selected color.
 	 * 
 	 * @return The ARGB value of the currently selected color.
@@ -416,8 +435,14 @@ public class SVBar extends View {
 
 		Bundle state = new Bundle();
 		state.putParcelable(STATE_PARENT, superState);
-		state.putInt(STATE_POSITION, mBarPointerPosition);
 		state.putFloatArray(STATE_COLOR, mHSVColor);
+		float[] hsvColor = new float[3];
+		Color.colorToHSV(mColor, hsvColor);
+		if (hsvColor[1] < hsvColor[2]) {
+			state.putFloat(STATE_SATURATION, hsvColor[1]);
+		} else {
+			state.putFloat(STATE_VALUE, hsvColor[2]);
+		}
 
 		return state;
 	}
@@ -429,7 +454,11 @@ public class SVBar extends View {
 		Parcelable superState = savedState.getParcelable(STATE_PARENT);
 		super.onRestoreInstanceState(superState);
 
-		mBarPointerPosition = savedState.getInt(STATE_POSITION);
 		setColor(Color.HSVToColor(savedState.getFloatArray(STATE_COLOR)));
+		if (savedState.containsKey(STATE_SATURATION)) {
+			setSaturation(savedState.getFloat(STATE_SATURATION));
+		} else {
+			setValue(savedState.getFloat(STATE_VALUE));
+		}
 	}
 }

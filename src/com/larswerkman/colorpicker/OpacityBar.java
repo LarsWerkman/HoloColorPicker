@@ -21,8 +21,8 @@ public class OpacityBar extends View {
 	 * Constants used to save/restore the instance state.
 	 */
 	private static final String STATE_PARENT = "parent";
-	private static final String STATE_POSITION = "position";
 	private static final String STATE_COLOR = "color";
+	private static final String STATE_OPACITY = "opacity";
 
 	/**
 	 * The thickness of the bar.
@@ -190,7 +190,6 @@ public class OpacityBar extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		int oldBarLength = mBarLength;
 		mBarLength = w - (mBarPointerHaloRadius * 2);
 
 		// Fill the rectangle instance.
@@ -206,9 +205,10 @@ public class OpacityBar extends View {
 						Color.HSVToColor(0xFF, mHSVColor) }, null,
 				Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
-		mBarPointerPosition = mBarPointerPosition * (mBarLength / oldBarLength);
 		mPosToOpacFactor = 0xFF / ((float) mBarLength);
 		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
+		mBarPointerPosition = round((mOpacToPosFactor * Color.alpha(mColor)))
+				+ mBarPointerHaloRadius;
 	}
 
 	@Override
@@ -235,8 +235,8 @@ public class OpacityBar extends View {
 			if (x >= (mBarPointerHaloRadius)
 					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
 					&& y <= (mBarPointerHaloRadius * 2)) {
-				mBarPointerPosition = (int) x;
-				calculateColor((int) x);
+				mBarPointerPosition = round(x);
+				calculateColor(round(x));
 				mBarPointerPaint.setColor(mColor);
 				mIsMovingPointer = true;
 				invalidate();
@@ -247,8 +247,8 @@ public class OpacityBar extends View {
 				// Move the the pointer on the bar.
 				if (x >= mBarPointerHaloRadius
 						&& x <= (mBarPointerHaloRadius + mBarLength)) {
-					mBarPointerPosition = (int) x;
-					calculateColor((int) x);
+					mBarPointerPosition = round(x);
+					calculateColor(round(x));
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
@@ -309,7 +309,7 @@ public class OpacityBar extends View {
 	 *            float between 0 > 255
 	 */
 	public void setOpacity(int opacity) {
-		mBarPointerPosition = (int) (mOpacToPosFactor * opacity)
+		mBarPointerPosition = round((mOpacToPosFactor * opacity))
 				+ mBarPointerHaloRadius;
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
@@ -325,7 +325,7 @@ public class OpacityBar extends View {
 	 * @return The int value of the currently selected opacity.
 	 */
 	public int getOpacity() {
-		int opacity = (int) (mPosToOpacFactor * (mBarPointerPosition - mBarPointerHaloRadius));
+		int opacity = round((mPosToOpacFactor * (mBarPointerPosition - mBarPointerHaloRadius)));
 		if (opacity < 5) {
 			return 0x00;
 		} else if (opacity > 250) {
@@ -344,15 +344,24 @@ public class OpacityBar extends View {
 	private void calculateColor(int x) {
 		if (x >= mBarPointerHaloRadius
 				&& x <= (mBarPointerHaloRadius + mBarLength)) {
-			mColor = Color.HSVToColor(
-					(int) (mPosToOpacFactor * (x - mBarPointerHaloRadius)),
-					mHSVColor);
+			mColor = Color.HSVToColor(round(mPosToOpacFactor
+					* (x - mBarPointerHaloRadius)), mHSVColor);
 		}
 		if (Color.alpha(mColor) > 250) {
 			mColor = Color.HSVToColor(mHSVColor);
 		} else if (Color.alpha(mColor) < 5) {
 			mColor = Color.TRANSPARENT;
 		}
+	}
+
+	/**
+	 * Rounds a float to an integer using (int) (f + .5).
+	 * 
+	 * @param f
+	 * @return the rounded integer
+	 */
+	private int round(float f) {
+		return (int) (f + .5);
 	}
 
 	/**
@@ -383,8 +392,8 @@ public class OpacityBar extends View {
 
 		Bundle state = new Bundle();
 		state.putParcelable(STATE_PARENT, superState);
-		state.putInt(STATE_POSITION, mBarPointerPosition);
 		state.putFloatArray(STATE_COLOR, mHSVColor);
+		state.putInt(STATE_OPACITY, getOpacity());
 
 		return state;
 	}
@@ -396,7 +405,7 @@ public class OpacityBar extends View {
 		Parcelable superState = savedState.getParcelable(STATE_PARENT);
 		super.onRestoreInstanceState(superState);
 
-		mBarPointerPosition = savedState.getInt(STATE_POSITION);
 		setColor(Color.HSVToColor(savedState.getFloatArray(STATE_COLOR)));
+		setOpacity(savedState.getInt(STATE_OPACITY));
 	}
 }
