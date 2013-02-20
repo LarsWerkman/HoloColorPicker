@@ -690,6 +690,7 @@ public class ColorPicker extends View {
 			invalidate();
 			break;
 		}
+		getParent().requestDisallowInterceptTouchEvent(true);
 		return true;
 	}
 
