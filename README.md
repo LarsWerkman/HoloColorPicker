@@ -10,7 +10,7 @@ You can also set the last selected color and see the difference with the new sel
 Demo can be found on my Google Drive [here](https://docs.google.com/file/d/0BwclyDTlLrdXRzVnTGJvTlRfU2s/edit) if interested. the code of the sample can be found at a gist [here](https://gist.github.com/LarsWerkman/4754528)
 
 ![image](https://lh6.googleusercontent.com/-Rn5TDr6QoG4/UQk8OPpsPEI/AAAAAAAAAX0/TKlibuBjupo//framed_HoloColorPicker.png)
-![image](https://lh3.googleusercontent.com/-2JFzIZ4ote8/UQk8OCCJH9I/AAAAAAAAAX4/dO5i-qWnhUs//framed_HoloColorPicker2.png)
+![image](https://lh4.googleusercontent.com/-GtJYDCQdnVo/UVW4ML7WIuI/AAAAAAAAAj4/YKHEUnhvLhA//framed_colorpicker.png)
 
 
 <h2>Documentation</h2>
