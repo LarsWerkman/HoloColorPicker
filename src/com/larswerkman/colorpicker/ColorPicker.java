@@ -199,6 +199,16 @@ public class ColorPicker extends View {
 	private OpacityBar mOpacityBar = null;
 
 	/**
+	 * {@code SaturationBar} instance used to control the Saturation bar.
+	 */
+	private SaturationBar mSaturationBar = null;
+
+	/**
+	 * {@code ValueBar} instance used to control the Value bar.
+	 */
+	private ValueBar mValueBar = null;
+
+	/**
 	 * {@code onColorChangedListener} instance of the onColorChangedListener
 	 */
 	private OnColorChangedListener onColorChangedListener;
@@ -472,6 +482,18 @@ public class ColorPicker extends View {
 			}
 		}
 
+		if (mSaturationBar != null) {
+			Color.colorToHSV(color, mHSV);
+			mSaturationBar.setColor(mColor);
+			mSaturationBar.setSaturation(mHSV[1]);
+		}
+
+		if (mValueBar != null) {
+			Color.colorToHSV(color, mHSV);
+			mValueBar.setColor(mColor);
+			mValueBar.setValue(mHSV[2]);
+		}
+
 		invalidate();
 	}
 
@@ -669,18 +691,24 @@ public class ColorPicker extends View {
 				mAngle = (float) java.lang.Math.atan2(y, x);
 				mPointerColor.setColor(calculateColor(mAngle));
 
-				// Check wheter there is a Saturation/Value bar or/and
-				// OpacityBar connected.
-				if (mSVbar != null && mOpacityBar == null) {
-					mSVbar.setColor(mColor);
-				} else if (mSVbar == null && mOpacityBar != null) {
+				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
+
+				if (mOpacityBar != null) {
 					mOpacityBar.setColor(mColor);
-				} else if (mSVbar != null && mOpacityBar != null) {
-					mOpacityBar.setColor(mColor);
-					mSVbar.setColor(mColor);
-				} else {
-					setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
 				}
+				
+				if (mValueBar != null) {
+					mValueBar.setColor(mColor);
+				}
+
+				if (mSaturationBar != null) {
+					mSaturationBar.setColor(mColor);
+				}
+				
+				if (mSVbar != null) {
+					mSVbar.setColor(mColor);
+				}
+
 				invalidate();
 			}
 			break;
@@ -690,7 +718,6 @@ public class ColorPicker extends View {
 			invalidate();
 			break;
 		}
-		getParent().requestDisallowInterceptTouchEvent(true);
 		return true;
 	}
 
@@ -735,6 +762,19 @@ public class ColorPicker extends View {
 		// Give an instance of the color picker to the Opacity bar.
 		mOpacityBar.setColorPicker(this);
 		mOpacityBar.setColor(mColor);
+	}
+
+	public void addSaturationBar(SaturationBar bar) {
+		mSaturationBar = bar;
+
+		mSaturationBar.setColorPicker(this);
+		mSaturationBar.setColor(mColor);
+	}
+
+	public void addValueBar(ValueBar bar) {
+		mValueBar = bar;
+		mValueBar.setColorPicker(this);
+		mValueBar.setColor(mColor);
 	}
 
 	/**
@@ -782,6 +822,30 @@ public class ColorPicker extends View {
 	public void changeOpacityBarColor(int color) {
 		if (mOpacityBar != null) {
 			mOpacityBar.setColor(color);
+		}
+	}
+
+	/**
+	 * Used to change the color of the {@code SaturationBar}.
+	 * 
+	 * @param color
+	 *            int of the color used to change the opacity bar color.
+	 */
+	public void changeSaturationBarColor(int color) {
+		if (mSaturationBar != null) {
+			mSaturationBar.setColor(color);
+		}
+	}
+
+	/**
+	 * Used to change the color of the {@code ValueBar}.
+	 * 
+	 * @param color
+	 *            int of the color used to change the opacity bar color.
+	 */
+	public void changeValueBarColor(int color) {
+		if (mValueBar != null) {
+			mValueBar.setColor(color);
 		}
 	}
 

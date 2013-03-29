@@ -14,6 +14,11 @@ Demo can be found on my Google Drive [here](https://docs.google.com/file/d/0Bwcl
 
 
 <h2>Documentation</h2>
+<h3>UDPATE</h3>
+Added support for a SaturationBar and ValueBar.
+
+<br>
+
 To add the ColorPicker to your layout add this to your xml
 ```xml
 <com.larswerkman.colorpicker.ColorPicker
@@ -36,14 +41,35 @@ The same goes for the Opacity bar
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
 ```
+
+Saturation bar
+```xml
+<com.larswerkman.colorpicker.SaturationBar
+    android:id="@+id/saturationbar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+```
+
+and a Value bar
+```xml
+<com.larswerkman.colorpicker.ValueBar
+    android:id="@+id/valuebar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+```
+
 To connect the bars with the colorpicker and to get the selected color.
 ```java
 ColorPicker picker = (ColorPicker) findViewById(R.id.picker);
 SVBar svBar = (SVBar) findViewById(R.id.svbar);
 OpacityBar opacityBar = (OpacityBar) findViewById(R.id.opacitybar);
+SaturationBar saturationBar = (SaturationBar) findViewById(R.id.saturationbar);
+ValueBar valueBar = (ValueBar) findViewById(R.id.valuebar);
 	
 picker.addSVBar(svBar);
 picker.addOpacityBar(opacityBar);
+picker.addSaturationBar(saturationBar);
+picker.addValueBar(valueBar);
 
 //To get the color
 picker.getColor();
