@@ -488,9 +488,12 @@ public class ColorPicker extends View {
 			mSaturationBar.setSaturation(mHSV[1]);
 		}
 
-		if (mValueBar != null) {
+		if (mValueBar != null && mSaturationBar == null) {
 			Color.colorToHSV(color, mHSV);
 			mValueBar.setColor(mColor);
+			mValueBar.setValue(mHSV[2]);
+		} else if (mValueBar != null) {
+			Color.colorToHSV(color, mHSV);
 			mValueBar.setValue(mHSV[2]);
 		}
 
@@ -502,164 +505,17 @@ public class ColorPicker extends View {
 	 * 
 	 * @param color
 	 *            The RGB value of the color to "find" on the color wheel.
-	 *            {@link #normalizeColor(int)} will be used to map this color to
-	 *            one on the color wheel if necessary.
 	 * 
 	 * @return The angle (in rad) the "normalized" color is displayed on the
 	 *         color wheel.
 	 */
 	private float colorToAngle(int color) {
-		int[] colorInfo = normalizeColor(color);
-		int normColor = colorInfo[0];
-		int colorMask = colorInfo[1];
-		int shiftValue = colorInfo[2];
-
-		int anchorColor = (normColor & ~colorMask);
-
-		// Find the "anchor" color in the COLORS array
-		for (int i = 0; i < COLORS.length - 1; i++) {
-			if (COLORS[i] == anchorColor) {
-				int nextValue = COLORS[i + 1];
-
-				double value;
-				double decimals = ((normColor >> shiftValue) & 0xFF) / 255D;
-
-				// Find out if the gradient our color belongs to goes from the
-				// element just found to
-				// the next element in the array.
-				if ((nextValue & colorMask) != (anchorColor & colorMask)) {
-					// Compute value depending of the gradient direction
-					if (nextValue < anchorColor) {
-						value = i + 1 - decimals;
-					} else {
-						value = i + decimals;
-					}
-				} else {
-					// It's a gradient from this element to the previous element
-					// in the array.
-
-					// Wrap to the end of the array if the "anchor" color is the
-					// first element.
-					int index = (i == 0) ? COLORS.length - 1 : i;
-					int prevValue = COLORS[index - 1];
-
-					// Compute value depending of the gradient direction
-					if (prevValue < anchorColor) {
-						value = index - 1 + decimals;
-					} else {
-						value = index - decimals;
-					}
-				}
-
-				// Calculate the angle in rad (from -PI to PI)
-				float angle = (float) (2 * Math.PI * value / (COLORS.length - 1));
-				if (angle > Math.PI) {
-					angle -= 2 * Math.PI;
-				}
-
-				return angle;
-			}
-		}
-
-		// This shouldn't happen
-		return 0;
+		float[] colors = new float[3];
+		Color.colorToHSV(color, colors);
+		
+		return (float) Math.toRadians(-colors[0]);
 	}
-
-	/**
-	 * "Normalize" the supplied color.
-	 * 
-	 * <p>
-	 * This will set the lowest value of R,G,B to 0, the highest to 255, and
-	 * will keep the middle value.<br>
-	 * For values close to those on the color wheel this will result in close
-	 * matches. For other values, especially shades of grey this will produce
-	 * funny results.
-	 * </p>
-	 * 
-	 * @param color
-	 *            The color to "normalize".
-	 * 
-	 * @return An {@code int} array with the following contents:
-	 *         <ol>
-	 *         <li>The ARGB value of the "normalized" color.</li>
-	 *         <li>A mask with all bits {@code 0} but those for the byte
-	 *         representing the "middle value" that remains unchanged in the
-	 *         "normalized" color.</li>
-	 *         <li>The number of bits the "normalized" color has to be shifted
-	 *         to the right so the "middle value" is in the lower 8 bits.</li>
-	 *         </ol>
-	 */
-	private int[] normalizeColor(int color) {
-		// Remove S and V from color
-		Color.colorToHSV(color, mHSV);
-		mHSV[1] = 1f;
-		mHSV[2] = 1f;
-		color = Color.HSVToColor(mHSV);
-
-		// Normalize
-		int red = Color.red(color);
-		int green = Color.green(color);
-		int blue = Color.blue(color);
-
-		int newRed = red;
-		int newGreen = green;
-		int newBlue = blue;
-
-		int maskRed = 0;
-		int maskGreen = 0;
-		int maskBlue = 0;
-		int shiftValue;
-
-		if (red <= green && red <= blue) {
-			// Red is the smallest component
-			newRed = 0;
-			if (green > blue) {
-				// Green is the largest component
-				shiftValue = 0;
-				maskBlue = 0xFF;
-				newGreen = 0xFF;
-			} else {
-				// We make blue the largest component
-				shiftValue = 8;
-				maskGreen = 0xFF;
-				newBlue = 0xFF;
-			}
-		} else if (green <= red && green <= blue) {
-			// Green is the smallest component
-			newGreen = 0;
-			if (red > blue) {
-				// Red is the largest component
-				shiftValue = 0;
-				maskBlue = 0xFF;
-				newRed = 0xFF;
-			} else {
-				// We make blue the largest component
-				shiftValue = 16;
-				maskRed = 0xFF;
-				newBlue = 0xFF;
-			}
-		} else {
-			// We make blue the smallest component
-			newBlue = 0;
-			if (red > green) {
-				// Red is the largest component
-				shiftValue = 8;
-				maskGreen = 0xFF;
-				newRed = 0xFF;
-			} else {
-				// We make green the largest component
-				shiftValue = 16;
-				maskRed = 0xFF;
-				newGreen = 0xFF;
-			}
-		}
-
-		int normColor = Color.argb(255, newRed, newGreen, newBlue);
-		int colorMask = Color.argb(0, maskRed, maskGreen, maskBlue);
-
-		return new int[] { normColor, colorMask, shiftValue };
-	}
-
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// Convert coordinates to our internal coordinate system
@@ -696,7 +552,7 @@ public class ColorPicker extends View {
 				if (mOpacityBar != null) {
 					mOpacityBar.setColor(mColor);
 				}
-				
+
 				if (mValueBar != null) {
 					mValueBar.setColor(mColor);
 				}
@@ -704,7 +560,7 @@ public class ColorPicker extends View {
 				if (mSaturationBar != null) {
 					mSaturationBar.setColor(mColor);
 				}
-				
+
 				if (mSVbar != null) {
 					mSVbar.setColor(mColor);
 				}
