@@ -252,18 +252,16 @@ public class OpacityBar extends View {
 
 		// Convert coordinates to our internal coordinate system
 		float x = event.getX();
-		float y = event.getY();
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+		    	mIsMovingPointer = true;
 			// Check whether the user pressed on (or near) the pointer
 			if (x >= (mBarPointerHaloRadius)
-					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
-					&& y <= (mBarPointerHaloRadius * 2)) {
+					&& x <= (mBarPointerHaloRadius + mBarLength)) {
 				mBarPointerPosition = Math.round(x);
 				calculateColor(Math.round(x));
 				mBarPointerPaint.setColor(mColor);
-				mIsMovingPointer = true;
 				invalidate();
 			}
 			break;
@@ -367,19 +365,23 @@ public class OpacityBar extends View {
 	 * @param x
 	 *            X-Coordinate of the pointer.
 	 */
-	private void calculateColor(int x) {
-		if (x >= mBarPointerHaloRadius
-				&& x <= (mBarPointerHaloRadius + mBarLength)) {
-			mColor = Color.HSVToColor(
-					Math.round(mPosToOpacFactor * (x - mBarPointerHaloRadius)),
-					mHSVColor);
-		}
-		if (Color.alpha(mColor) > 250) {
-			mColor = Color.HSVToColor(mHSVColor);
-		} else if (Color.alpha(mColor) < 5) {
-			mColor = Color.TRANSPARENT;
-		}
-	}
+        private void calculateColor(int x) {
+    		x = x - mBarPointerHaloRadius;
+    		if (x < 0) {
+    		    x = 0;
+    		} else if (x > mBarLength) {
+    		    x = mBarLength;
+    		}
+
+    		mColor = Color.HSVToColor(
+    			Math.round(mPosToOpacFactor * x),
+    			mHSVColor);
+    		if (Color.alpha(mColor) > 250) {
+    		    mColor = Color.HSVToColor(mHSVColor);
+    		} else if (Color.alpha(mColor) < 5) {
+    		    mColor = Color.TRANSPARENT;
+    		}
+        }
 
 	/**
 	 * Get the currently selected color.
