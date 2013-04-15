@@ -518,6 +518,8 @@ public class ColorPicker extends View {
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		getParent().requestDisallowInterceptTouchEvent(true);
+
 		// Convert coordinates to our internal coordinate system
 		float x = event.getX() - mTranslationOffset;
 		float y = event.getY() - mTranslationOffset;
