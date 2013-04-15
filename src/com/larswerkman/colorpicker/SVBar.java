@@ -261,18 +261,16 @@ public class SVBar extends View {
 
 		// Convert coordinates to our internal coordinate system
 		float x = event.getX();
-		float y = event.getY();
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+		    	mIsMovingPointer = true;
 			// Check whether the user pressed on the pointer
 			if (x >= (mBarPointerHaloRadius)
-					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
-					&& y <= (mBarPointerHaloRadius * 2)) {
+					&& x <= (mBarPointerHaloRadius + mBarLength)) {
 				mBarPointerPosition = Math.round(x);
 				calculateColor(Math.round(x));
 				mBarPointerPaint.setColor(mColor);
-				mIsMovingPointer = true;
 				invalidate();
 			}
 			break;

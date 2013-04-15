@@ -260,18 +260,16 @@ public class ValueBar extends View {
 
 		// Convert coordinates to our internal coordinate system
 		float x = event.getX();
-		float y = event.getY();
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+		    	mIsMovingPointer = true;
 			// Check whether the user pressed on (or near) the pointer
 			if (x >= (mBarPointerHaloRadius)
-					&& x <= (mBarPointerHaloRadius + mBarLength) && y >= 0
-					&& y <= (mBarPointerHaloRadius * 2)) {
+					&& x <= (mBarPointerHaloRadius + mBarLength)) {
 				mBarPointerPosition = Math.round(x);
 				calculateColor(Math.round(x));
 				mBarPointerPaint.setColor(mColor);
-				mIsMovingPointer = true;
 				invalidate();
 			}
 			break;
@@ -356,23 +354,24 @@ public class ValueBar extends View {
 		}
 		invalidate();
 	}
-
-	/**
-	 * Calculate the color selected by the pointer on the bar.
-	 * 
-	 * @param x
-	 *            X-Coordinate of the pointer.
-	 */
+    
+        /**
+         * Calculate the color selected by the pointer on the bar.
+         * 
+         * @param x
+         *            X-Coordinate of the pointer.
+         */
 	private void calculateColor(int x) {
-		if (x >= mBarPointerHaloRadius
-				&& x <= (mBarPointerHaloRadius + mBarLength)) {
-			mColor = Color
-					.HSVToColor(new float[] {
-							mHSVColor[0],
-							mHSVColor[1],
-							(float) (1 - (mPosToSatFactor * (x - mBarPointerHaloRadius))) });
-		}
-	}
+	    x = x - mBarPointerHaloRadius;
+	    if (x < 0) {
+		x = 0;
+	    } else if (x > mBarLength) {
+		x = mBarLength;
+	    }
+	    mColor = Color.HSVToColor(new float[] { mHSVColor[0],
+		    				    mHSVColor[1],
+		    				    (float) (1 - (mPosToSatFactor * x)) });
+    }
 
 	/**
 	 * Get the currently selected color.
