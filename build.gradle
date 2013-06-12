@@ -12,7 +12,12 @@ repositories {
 }
 
 apply plugin: 'android-library'
+apply plugin: 'maven-publish'
+
 // apply from: 'https://raw.github.com/koush/mvn-repo/master/maven.gradle'
+
+version '1.0'
+group 'com.larswerkman'
 
 
 android {
@@ -33,3 +38,13 @@ android {
         instrumentTest.setRoot('tests')
     }
 }
+
+android.libraryVariants
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact bundleRelease
+        }
+    }
+}
+
