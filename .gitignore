@@ -22,3 +22,6 @@ proguard-project.txt
 #User specific
 local.properties
 sample/src/com/cyrilmottier/android/polarissample/util/LocalConfig.java
+
+build
+.gradle
