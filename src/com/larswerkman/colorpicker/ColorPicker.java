@@ -380,8 +380,7 @@ public class ColorPicker extends View {
 		mTranslationOffset = min * 0.5f;
 
 		// fill the rectangle instances.
-		mColorWheelRadius = min / 2 - mColorWheelThickness
-				- (mColorPointerHaloRadius / 2);
+		mColorWheelRadius = min / 2 - mColorWheelThickness - mColorPointerHaloRadius;
 		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius,
 				mColorWheelRadius, mColorWheelRadius);
 
