@@ -534,13 +534,18 @@ public class ColorPicker extends View {
 				mUserIsMovingPointer = true;
 				invalidate();
 			}
-			// Check wheter the user pressed on the center.
-			if (x >= -mColorCenterRadius && x <= mColorCenterRadius
+			// Check whether the user pressed on the center.
+			else if (x >= -mColorCenterRadius && x <= mColorCenterRadius
 					&& y >= -mColorCenterRadius && y <= mColorCenterRadius) {
 				mCenterHaloPaint.setAlpha(0x50);
 				setColor(getOldCenterColor());
 				mCenterNewPaint.setColor(getOldCenterColor());
 				invalidate();
+			}
+			// If user did not press pointer or center, report event not handled
+			else{
+				getParent().requestDisallowInterceptTouchEvent(false);
+				return false;
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -567,6 +572,11 @@ public class ColorPicker extends View {
 				}
 
 				invalidate();
+			}
+			// If user did not press pointer or center, report event not handled
+			else{
+				getParent().requestDisallowInterceptTouchEvent(false);
+				return false;
 			}
 			break;
 		case MotionEvent.ACTION_UP:
