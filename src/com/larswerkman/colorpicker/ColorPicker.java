@@ -555,8 +555,8 @@ public class ColorPicker extends View {
 
 				// Check whether user pressed on the color wheel
 				float radius = (float)Math.sqrt(x*x + y*y);
-				float minColorWheelPickingRadius = mColorWheelRadius - .5f * mColorPointerHaloRadius;
-				float maxColorWheelPickingRadius = mColorWheelRadius + .5f * mColorPointerHaloRadius;
+				float minColorWheelPickingRadius = mColorWheelRadius - mColorPointerHaloRadius;
+				float maxColorWheelPickingRadius = mColorWheelRadius + mColorPointerHaloRadius;
 
 				if(radius >= minColorWheelPickingRadius && radius <= maxColorWheelPickingRadius) {
 					mAngle = (float)Math.atan2(y, x);
