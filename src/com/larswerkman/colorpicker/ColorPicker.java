@@ -515,6 +515,33 @@ public class ColorPicker extends View {
 		return (float) Math.toRadians(-colors[0]);
 	}
 	
+	/**
+	 * Updates all components with a new color from the color wheel,
+	 * without changing opacity, saturation or value.
+	 */
+	private void updateColor(int color) {
+		mPointerColor.setColor(color);
+
+		setNewCenterColor(color);
+
+		if (mOpacityBar != null) {
+			mOpacityBar.setColor(mColor);
+		}
+
+		if (mValueBar != null) {
+			mValueBar.setColor(mColor);
+		}
+
+		if (mSaturationBar != null) {
+			mSaturationBar.setColor(mColor);
+		}
+
+		if (mSVbar != null) {
+			mSVbar.setColor(mColor);
+		}
+	}
+
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		getParent().requestDisallowInterceptTouchEvent(true);
@@ -524,67 +551,53 @@ public class ColorPicker extends View {
 		float y = event.getY() - mTranslationOffset;
 
 		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			// Check whether the user pressed on the pointer.
-			float[] pointerPosition = calculatePointerPosition(mAngle);
-			if (x >= (pointerPosition[0] - mColorPointerHaloRadius)
-					&& x <= (pointerPosition[0] + mColorPointerHaloRadius)
-					&& y >= (pointerPosition[1] - mColorPointerHaloRadius)
-					&& y <= (pointerPosition[1] + mColorPointerHaloRadius)) {
-				mUserIsMovingPointer = true;
+			case MotionEvent.ACTION_DOWN:
+
+				// Check whether user pressed on the color wheel
+				float radius = (float)Math.sqrt(x*x + y*y);
+				float minColorWheelPickingRadius = mColorWheelRadius - .5f * mColorPointerHaloRadius;
+				float maxColorWheelPickingRadius = mColorWheelRadius + .5f * mColorPointerHaloRadius;
+
+				if(radius >= minColorWheelPickingRadius && radius <= maxColorWheelPickingRadius) {
+					mAngle = (float)Math.atan2(y, x);
+					mUserIsMovingPointer = true;
+					updateColor(calculateColor(mAngle));
+					invalidate();
+				}
+				// Check whether user pressed center
+				else if(radius <= mColorCenterRadius) {
+					mCenterHaloPaint.setAlpha(0x50);
+					setColor(getOldCenterColor());
+					mCenterNewPaint.setColor(getOldCenterColor());
+					invalidate();
+				}
+				// If user did not press pointer or center, report event not handled
+				else {
+					getParent().requestDisallowInterceptTouchEvent(false);
+					return false;
+				}
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				if (mUserIsMovingPointer) {
+					mAngle = (float)Math.atan2(y, x);
+					updateColor(calculateColor(mAngle));
+					invalidate();
+				}
+				// If user did not press pointer or center, report event not handled
+				else {
+					getParent().requestDisallowInterceptTouchEvent(false);
+					return false;
+				}
+				break;
+
+			case MotionEvent.ACTION_UP:
+				mUserIsMovingPointer = false;
+				mCenterHaloPaint.setAlpha(0x00);
 				invalidate();
-			}
-			// Check whether the user pressed on the center.
-			else if (x >= -mColorCenterRadius && x <= mColorCenterRadius
-					&& y >= -mColorCenterRadius && y <= mColorCenterRadius) {
-				mCenterHaloPaint.setAlpha(0x50);
-				setColor(getOldCenterColor());
-				mCenterNewPaint.setColor(getOldCenterColor());
-				invalidate();
-			}
-			// If user did not press pointer or center, report event not handled
-			else{
-				getParent().requestDisallowInterceptTouchEvent(false);
-				return false;
-			}
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mUserIsMovingPointer) {
-				mAngle = (float) java.lang.Math.atan2(y, x);
-				mPointerColor.setColor(calculateColor(mAngle));
-
-				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
-
-				if (mOpacityBar != null) {
-					mOpacityBar.setColor(mColor);
-				}
-
-				if (mValueBar != null) {
-					mValueBar.setColor(mColor);
-				}
-
-				if (mSaturationBar != null) {
-					mSaturationBar.setColor(mColor);
-				}
-
-				if (mSVbar != null) {
-					mSVbar.setColor(mColor);
-				}
-
-				invalidate();
-			}
-			// If user did not press pointer or center, report event not handled
-			else{
-				getParent().requestDisallowInterceptTouchEvent(false);
-				return false;
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			mUserIsMovingPointer = false;
-			mCenterHaloPaint.setAlpha(0x00);
-			invalidate();
-			break;
+				break;
 		}
+
 		return true;
 	}
 
