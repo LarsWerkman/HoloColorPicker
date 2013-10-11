@@ -3,7 +3,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:0.4.2'
+		classpath 'com.android.tools.build:gradle:0.5.+'
 	}
 }
 
@@ -22,7 +22,7 @@ group 'com.larswerkman'
 
 android {
 	compileSdkVersion 17
-	buildToolsVersion "17.0.0"
+	buildToolsVersion "18.0.0"
 
     sourceSets {
         main {
