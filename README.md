@@ -21,7 +21,7 @@ Added support for a SaturationBar and ValueBar.
 
 To add the ColorPicker to your layout add this to your xml
 ```xml
-<com.larswerkman.colorpicker.ColorPicker
+<com.larswerkman.holocolorpicker.ColorPicker
     android:id="@+id/picker"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
@@ -29,14 +29,14 @@ To add the ColorPicker to your layout add this to your xml
         
 To add a Saturation/Value bar to your layout add this to your xml
 ```xml
-<com.larswerkman.colorpicker.SVBar
+<com.larswerkman.holocolorpicker.SVBar
     android:id="@+id/svbar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
 ```       
 The same goes for the Opacity bar
 ```xml
-<com.larswerkman.colorpicker.OpacityBar
+<com.larswerkman.holocolorpicker.OpacityBar
     android:id="@+id/opacitybar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
@@ -44,7 +44,7 @@ The same goes for the Opacity bar
 
 Saturation bar
 ```xml
-<com.larswerkman.colorpicker.SaturationBar
+<com.larswerkman.holocolorpicker.SaturationBar
     android:id="@+id/saturationbar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
@@ -52,7 +52,7 @@ Saturation bar
 
 and a Value bar
 ```xml
-<com.larswerkman.colorpicker.ValueBar
+<com.larswerkman.holocolorpicker.ValueBar
     android:id="@+id/valuebar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
