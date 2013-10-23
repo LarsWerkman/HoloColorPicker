@@ -26,4 +26,8 @@ sample/src/com/cyrilmottier/android/polarissample/util/LocalConfig.java
 build
 .gradle
 
+<<<<<<< HEAD
+=======
+#Personal Files
+>>>>>>> 4d19725e96c799272f7f50a9ca2a600d8446d43d
 signing.properties
