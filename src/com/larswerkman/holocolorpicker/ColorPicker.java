@@ -313,7 +313,9 @@ public class ColorPicker extends View {
 		mCenterHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mCenterHaloPaint.setColor(Color.BLACK);
 		mCenterHaloPaint.setAlpha(0x00);
-
+		
+		mCenterNewColor = calculateColor(mAngle);
+		mCenterOldColor = calculateColor(mAngle);
 	}
 
 	@Override
@@ -457,6 +459,7 @@ public class ColorPicker extends View {
 	public void setColor(int color) {
 		mAngle = colorToAngle(color);
 		mPointerColor.setColor(calculateColor(mAngle));
+		mCenterNewPaint.setColor(calculateColor(mAngle));
 
 		// check of the instance isn't null
 		if (mOpacityBar != null) {
@@ -539,7 +542,6 @@ public class ColorPicker extends View {
 					&& y >= -mColorCenterRadius && y <= mColorCenterRadius) {
 				mCenterHaloPaint.setAlpha(0x50);
 				setColor(getOldCenterColor());
-				mCenterNewPaint.setColor(getOldCenterColor());
 				invalidate();
 			}
 			// If user did not press pointer or center, report event not handled
