@@ -80,6 +80,14 @@ picker.setOldCenterColor(picker.getColor());
 //in the activity
 picker.setOnColorChangedListener(this);
 ```	
+
+<H2>Dependency</H2>
+Adding it as a dependency to your project.
+
+	dependencies {
+    	compile 'com.larswerkman:HoloColorPicker:1.1'
+	}
+
 <H2>License</H2>
 	
  	 Copyright 2012 Lars Werkman
