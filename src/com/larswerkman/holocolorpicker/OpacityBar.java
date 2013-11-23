@@ -30,6 +30,7 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 
 public class OpacityBar extends View {
 
@@ -39,6 +40,18 @@ public class OpacityBar extends View {
 	private static final String STATE_PARENT = "parent";
 	private static final String STATE_COLOR = "color";
 	private static final String STATE_OPACITY = "opacity";
+	private static final String STATE_ORIENTATION = "orientation";
+	
+	/**
+	 * Constants used to identify orientation.
+	 */
+	private static final boolean ORIENTATION_HORIZONTAL = true;
+	private static final boolean ORIENTATION_VERTICAL = false;
+	
+	/**
+	 * Default orientation of the bar.
+	 */
+	private static final boolean ORIENTATION_DEFAULT = ORIENTATION_HORIZONTAL;
 
 	/**
 	 * The thickness of the bar.
@@ -125,6 +138,11 @@ public class OpacityBar extends View {
 	 */
 	private ColorPicker mPicker = null;
 
+	/**
+	 * Used to toggle orientation between vertical and horizontal.
+	 */
+	private boolean mOrientation;
+
 	public OpacityBar(Context context) {
 		super(context);
 		init(null, 0);
@@ -157,6 +175,8 @@ public class OpacityBar extends View {
 		mBarPointerHaloRadius = a.getDimensionPixelSize(
 				R.styleable.ColorBars_bar_pointer_halo_radius,
 				b.getDimensionPixelSize(R.dimen.bar_pointer_halo_radius));
+		mOrientation = a.getBoolean(
+				R.styleable.ColorBars_bar_orientation_horizontal, ORIENTATION_DEFAULT);
 
 		a.recycle();
 
@@ -181,44 +201,75 @@ public class OpacityBar extends View {
 		final int intrinsicSize = mPreferredBarLength
 				+ (mBarPointerHaloRadius * 2);
 
-		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+		// Variable orientation
+		int measureSpec;
+		if (mOrientation == ORIENTATION_HORIZONTAL) {
+			measureSpec = widthMeasureSpec;
+		}
+		else {
+			measureSpec = heightMeasureSpec;
+		}
+		int lengthMode = MeasureSpec.getMode(measureSpec);
+		int lengthSize = MeasureSpec.getSize(measureSpec);
 
-		int width;
-		if (widthMode == MeasureSpec.EXACTLY) {
-			width = widthSize;
-		} else if (widthMode == MeasureSpec.AT_MOST) {
-			width = Math.min(intrinsicSize, widthSize);
-		} else {
-			width = intrinsicSize;
+		int length;
+		if (lengthMode == MeasureSpec.EXACTLY) {
+			length = lengthSize;
+		}
+		else if (lengthMode == MeasureSpec.AT_MOST) {
+			length = Math.min(intrinsicSize, lengthSize);
+		}
+		else {
+			length = intrinsicSize;
 		}
 
-		mBarLength = width - (mBarPointerHaloRadius * 2);
-		setMeasuredDimension((mBarLength + (mBarPointerHaloRadius * 2)),
-				(mBarPointerHaloRadius * 2));
+		int barPointerHaloRadiusx2 = mBarPointerHaloRadius * 2;
+		mBarLength = length - barPointerHaloRadiusx2;
+		if(mOrientation == ORIENTATION_VERTICAL) {
+			setMeasuredDimension(barPointerHaloRadiusx2,
+			        	(mBarLength + barPointerHaloRadiusx2));
+		}
+		else {
+			setMeasuredDimension((mBarLength + barPointerHaloRadiusx2),
+						barPointerHaloRadiusx2);
+		}
 	}
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		mBarLength = w - (mBarPointerHaloRadius * 2);
-
-		// Fill the rectangle instance.
-		mBarRect.set(mBarPointerHaloRadius,
-				(mBarPointerHaloRadius - (mBarThickness / 2)),
-				(mBarLength + (mBarPointerHaloRadius)),
-				(mBarPointerHaloRadius + (mBarThickness / 2)));
+		
+		// Fill the rectangle instance based on orientation
+		int x1, y1;
+		if (mOrientation == ORIENTATION_HORIZONTAL) {
+			x1 = (mBarLength + mBarPointerHaloRadius);
+			y1 = mBarThickness;
+			mBarLength = w - (mBarPointerHaloRadius * 2);
+			mBarRect.set(mBarPointerHaloRadius,
+					(mBarPointerHaloRadius - (mBarThickness / 2)),
+					(mBarLength + (mBarPointerHaloRadius)),
+					(mBarPointerHaloRadius + (mBarThickness / 2)));
+		}
+		else {
+			x1 = mBarThickness;
+			y1 = (mBarLength + mBarPointerHaloRadius);
+			mBarLength = h - (mBarPointerHaloRadius * 2);
+			mBarRect.set(mBarPointerHaloRadius,
+					(mBarPointerHaloRadius - (mBarThickness / 2)),
+					(mBarPointerHaloRadius + (mBarThickness / 2)),
+					(mBarLength + (mBarPointerHaloRadius)));
+		}
 
 		// Update variables that depend of mBarLength.
-		if(!isInEditMode()){
+		if (!isInEditMode()){
 			shader = new LinearGradient(mBarPointerHaloRadius, 0,
-					(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+					x1, y1, new int[] {
 							Color.HSVToColor(0x00, mHSVColor),
 							Color.HSVToColor(0xFF, mHSVColor) }, null,
 					Shader.TileMode.CLAMP);
 		} else {
 			shader = new LinearGradient(mBarPointerHaloRadius, 0,
-					(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+					x1, y1, new int[] {
 							0x0081ff00, 0xff81ff00 }, null, Shader.TileMode.CLAMP);
 			Color.colorToHSV(0xff81ff00, mHSVColor);
 		}
@@ -226,9 +277,13 @@ public class OpacityBar extends View {
 		mBarPaint.setShader(shader);
 		mPosToOpacFactor = 0xFF / ((float) mBarLength);
 		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
-		if(!isInEditMode()){
-			mBarPointerPosition = Math.round((mOpacToPosFactor * Color
-					.alpha(mColor))) + mBarPointerHaloRadius;
+		
+		float[] hsvColor = new float[3];
+		Color.colorToHSV(mColor, hsvColor);
+		
+		if (!isInEditMode()){
+			mBarPointerPosition = Math.round((mOpacToPosFactor * Color.alpha(mColor))
+					+ mBarPointerHaloRadius);
 		} else {
 			mBarPointerPosition = mBarLength + mBarPointerHaloRadius;
 		}
@@ -238,12 +293,22 @@ public class OpacityBar extends View {
 	protected void onDraw(Canvas canvas) {
 		// Draw the bar.
 		canvas.drawRect(mBarRect, mBarPaint);
+
+		// Calculate the center of the pointer.
+		int cX, cY;
+		if (mOrientation == ORIENTATION_HORIZONTAL) {
+			cX = mBarPointerPosition;
+			cY = mBarPointerHaloRadius;
+		}
+		else {
+			cX = mBarPointerHaloRadius;
+			cY = mBarPointerPosition;
+		}
+		
 		// Draw the pointer halo.
-		canvas.drawCircle(mBarPointerPosition, mBarPointerHaloRadius,
-				mBarPointerHaloRadius, mBarPointerHaloPaint);
+		canvas.drawCircle(cX, cY, mBarPointerHaloRadius, mBarPointerHaloPaint);
 		// Draw the pointer.
-		canvas.drawCircle(mBarPointerPosition, mBarPointerHaloRadius,
-				mBarPointerRadius, mBarPointerPaint);
+		canvas.drawCircle(cX, cY, mBarPointerRadius, mBarPointerPaint);
 	};
 
 	@Override
@@ -251,16 +316,22 @@ public class OpacityBar extends View {
 		getParent().requestDisallowInterceptTouchEvent(true);
 
 		// Convert coordinates to our internal coordinate system
-		float x = event.getX();
+		float dimen;
+		if (mOrientation == ORIENTATION_HORIZONTAL) {
+			dimen = event.getX();
+		}
+		else {
+			dimen = event.getY();
+		}
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 		    	mIsMovingPointer = true;
 			// Check whether the user pressed on (or near) the pointer
-			if (x >= (mBarPointerHaloRadius)
-					&& x <= (mBarPointerHaloRadius + mBarLength)) {
-				mBarPointerPosition = Math.round(x);
-				calculateColor(Math.round(x));
+	    	if (dimen >= (mBarPointerHaloRadius)
+					&& dimen <= (mBarPointerHaloRadius + mBarLength)) {
+				mBarPointerPosition = Math.round(dimen);
+				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
 				invalidate();
 			}
@@ -268,16 +339,16 @@ public class OpacityBar extends View {
 		case MotionEvent.ACTION_MOVE:
 			if (mIsMovingPointer) {
 				// Move the the pointer on the bar.
-				if (x >= mBarPointerHaloRadius
-						&& x <= (mBarPointerHaloRadius + mBarLength)) {
-					mBarPointerPosition = Math.round(x);
-					calculateColor(Math.round(x));
+				if (dimen >= mBarPointerHaloRadius
+						&& dimen <= (mBarPointerHaloRadius + mBarLength)) {
+					mBarPointerPosition = Math.round(dimen);
+					calculateColor(Math.round(dimen));
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 					}
 					invalidate();
-				} else if (x < mBarPointerHaloRadius) {
+				} else if (dimen < mBarPointerHaloRadius) {
 					mBarPointerPosition = mBarPointerHaloRadius;
 					mColor = Color.TRANSPARENT;
 					mBarPointerPaint.setColor(mColor);
@@ -285,7 +356,7 @@ public class OpacityBar extends View {
 						mPicker.setNewCenterColor(mColor);
 					}
 					invalidate();
-				} else if (x > (mBarPointerHaloRadius + mBarLength)) {
+				} else if (dimen > (mBarPointerHaloRadius + mBarLength)) {
 					mBarPointerPosition = mBarPointerHaloRadius + mBarLength;
 					mColor = Color.HSVToColor(mHSVColor);
 					mBarPointerPaint.setColor(mColor);
@@ -311,9 +382,19 @@ public class OpacityBar extends View {
 	 * @param color
 	 */
 	public void setColor(int color) {
+		int x1, y1;
+		if(mOrientation == ORIENTATION_HORIZONTAL) {
+			x1 = (mBarLength + mBarPointerHaloRadius);
+			y1 = mBarThickness;
+		}
+		else {
+			x1 = mBarThickness;
+			y1 = (mBarLength + mBarPointerHaloRadius);
+		}
+		
 		Color.colorToHSV(color, mHSVColor);
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
-				(mBarLength + mBarPointerHaloRadius), mBarThickness, new int[] {
+				x1, y1, new int[] {
 						Color.HSVToColor(0x00, mHSVColor), color }, null,
 				Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
@@ -362,19 +443,19 @@ public class OpacityBar extends View {
 	/**
 	 * Calculate the color selected by the pointer on the bar.
 	 * 
-	 * @param x
-	 *            X-Coordinate of the pointer.
+	 * @param coord
+	 *            Coordinate of the pointer.
 	 */
-        private void calculateColor(int x) {
-    		x = x - mBarPointerHaloRadius;
-    		if (x < 0) {
-    		    x = 0;
-    		} else if (x > mBarLength) {
-    		    x = mBarLength;
-    		}
+        private void calculateColor(int coord) {
+    	    coord = coord - mBarPointerHaloRadius;
+    	    if (coord < 0) {
+    	    	coord = 0;
+    	    } else if (coord > mBarLength) {
+    	    	coord = mBarLength;
+    	    }
 
     		mColor = Color.HSVToColor(
-    			Math.round(mPosToOpacFactor * x),
+    			Math.round(mPosToOpacFactor * coord),
     			mHSVColor);
     		if (Color.alpha(mColor) > 250) {
     		    mColor = Color.HSVToColor(mHSVColor);
@@ -413,6 +494,7 @@ public class OpacityBar extends View {
 		state.putParcelable(STATE_PARENT, superState);
 		state.putFloatArray(STATE_COLOR, mHSVColor);
 		state.putInt(STATE_OPACITY, getOpacity());
+		state.putBoolean(STATE_ORIENTATION, ORIENTATION_HORIZONTAL);
 
 		return state;
 	}
@@ -426,5 +508,6 @@ public class OpacityBar extends View {
 
 		setColor(Color.HSVToColor(savedState.getFloatArray(STATE_COLOR)));
 		setOpacity(savedState.getInt(STATE_OPACITY));
+		mOrientation = savedState.getBoolean(STATE_ORIENTATION, ORIENTATION_DEFAULT);
 	}
 }
