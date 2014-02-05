@@ -15,7 +15,8 @@ Demo can be found on my Google Drive [here](https://docs.google.com/file/d/0Bwcl
 
 <h2>Documentation</h2>
 <h3>UDPATE</h3>
-Added support for a SaturationBar and ValueBar.
+Now bars can change there orientation, Thanks to [tonyr59h](https://github.com/tonyr59h)
+also the gradle build version was updated to 0.7.+
 
 <br>
 
@@ -85,7 +86,7 @@ picker.setOnColorChangedListener(this);
 Adding it as a dependency to your project.
 
 	dependencies {
-    	compile 'com.larswerkman:HoloColorPicker:1.1'
+    	compile 'com.larswerkman:HoloColorPicker:1.2'
 	}
 
 <H2>License</H2>
