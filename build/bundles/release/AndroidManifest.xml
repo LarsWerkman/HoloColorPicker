@@ -1,5 +1,0 @@
-<!-- From: file:/Users/lars/HoloColorPicker/AndroidManifest.xml --><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="12" android:versionName="1.2" package="com.larswerkman.holocolorpicker">
-
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16"/>
-
-</manifest>
