@@ -30,7 +30,6 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 
 public class ValueBar extends View {
 

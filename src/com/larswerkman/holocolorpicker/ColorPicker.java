@@ -47,6 +47,7 @@ public class ColorPicker extends View {
 	private static final String STATE_PARENT = "parent";
 	private static final String STATE_ANGLE = "angle";
 	private static final String STATE_OLD_COLOR = "color";
+	private static final String STATE_SHOW_OLD_COLOR = "showColor";
 
 	/**
 	 * Colors to construct the color wheel using {@link SweepGradient}.
@@ -135,6 +136,11 @@ public class ColorPicker extends View {
 	 * The ARGB value of the center with the old selected color.
 	 */
 	private int mCenterOldColor;
+	
+	/**
+	 * Whether to show the old color in the center or not.
+	 */
+	private boolean mShowCenterOldColor;
 
 	/**
 	 * The ARGB value of the center with the new selected color.
@@ -316,6 +322,7 @@ public class ColorPicker extends View {
 		
 		mCenterNewColor = calculateColor(mAngle);
 		mCenterOldColor = calculateColor(mAngle);
+		mShowCenterOldColor = true;
 	}
 
 	@Override
@@ -341,12 +348,18 @@ public class ColorPicker extends View {
 
 		// Draw the halo of the center colors.
 		canvas.drawCircle(0, 0, mColorCenterHaloRadius, mCenterHaloPaint);
+		
+		if (mShowCenterOldColor) {
+			// Draw the old selected color in the center.
+			canvas.drawArc(mCenterRectangle, 90, 180, true, mCenterOldPaint);
 
-		// Draw the old selected color in the center.
-		canvas.drawArc(mCenterRectangle, 90, 180, true, mCenterOldPaint);
-
-		// Draw the new selected color in the center.
-		canvas.drawArc(mCenterRectangle, 270, 180, true, mCenterNewPaint);
+			// Draw the new selected color in the center.
+			canvas.drawArc(mCenterRectangle, 270, 180, true, mCenterNewPaint);
+		}
+		else {
+			// Draw the new selected color in the center.
+			canvas.drawArc(mCenterRectangle, 0, 360, true, mCenterNewPaint);
+		}
 	}
 
 	@Override
@@ -539,7 +552,8 @@ public class ColorPicker extends View {
 			}
 			// Check whether the user pressed on the center.
 			else if (x >= -mColorCenterRadius && x <= mColorCenterRadius
-					&& y >= -mColorCenterRadius && y <= mColorCenterRadius) {
+					&& y >= -mColorCenterRadius && y <= mColorCenterRadius
+					&& mShowCenterOldColor) {
 				mCenterHaloPaint.setAlpha(0x50);
 				setColor(getOldCenterColor());
 				invalidate();
@@ -680,6 +694,20 @@ public class ColorPicker extends View {
 	public int getOldCenterColor() {
 		return mCenterOldColor;
 	}
+	
+	/**
+	 * Set whether the old color is to be shown in the center or not
+	 * 
+	 * @param show true if the old color is to be shown, false otherwise
+	 */
+	public void setShowOldCenterColor(boolean show) {
+		mShowCenterOldColor = show;
+		invalidate();
+	}
+	
+	public boolean getShowOldCenterColor() {
+		return mShowCenterOldColor;
+	}
 
 	/**
 	 * Used to change the color of the {@code OpacityBar} used by the
@@ -726,6 +754,7 @@ public class ColorPicker extends View {
 		state.putParcelable(STATE_PARENT, superState);
 		state.putFloat(STATE_ANGLE, mAngle);
 		state.putInt(STATE_OLD_COLOR, mCenterOldColor);
+		state.putBoolean(STATE_SHOW_OLD_COLOR, mShowCenterOldColor);
 
 		return state;
 	}
@@ -739,6 +768,7 @@ public class ColorPicker extends View {
 
 		mAngle = savedState.getFloat(STATE_ANGLE);
 		setOldCenterColor(savedState.getInt(STATE_OLD_COLOR));
+		mShowCenterOldColor = savedState.getBoolean(STATE_SHOW_OLD_COLOR);
 		int currentColor = calculateColor(mAngle);
 		mPointerColor.setColor(currentColor);
 		setNewCenterColor(currentColor);
