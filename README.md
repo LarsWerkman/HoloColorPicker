@@ -80,13 +80,16 @@ picker.setOldCenterColor(picker.getColor());
 // adds listener to the colorpicker which is implemented
 //in the activity
 picker.setOnColorChangedListener(this);
+
+//to turn of showing the old color
+picker.setShowOldCenterColor(false);
 ```	
 
 <H2>Dependency</H2>
 Adding it as a dependency to your project.
 
 	dependencies {
-    	compile 'com.larswerkman:HoloColorPicker:1.2'
+    	compile 'com.larswerkman:HoloColorPicker:1.3'
 	}
 
 <H2>License</H2>
