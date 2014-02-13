@@ -576,7 +576,7 @@ public class ColorPicker extends View {
 				mPointerColor.setColor(calculateColor(mAngle));
 
 				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
-
+				
 				if (mOpacityBar != null) {
 					mOpacityBar.setColor(mColor);
 				}
@@ -655,7 +655,6 @@ public class ColorPicker extends View {
 
 	public void addSaturationBar(SaturationBar bar) {
 		mSaturationBar = bar;
-
 		mSaturationBar.setColorPicker(this);
 		mSaturationBar.setColor(mColor);
 	}
@@ -751,6 +750,42 @@ public class ColorPicker extends View {
 		if (mValueBar != null) {
 			mValueBar.setColor(color);
 		}
+	}
+	
+	/**
+	 * Checks if there is an {@code OpacityBar} connected.
+	 * 
+	 * @return true or false.
+	 */
+	public boolean hasOpacityBar(){
+		return mOpacityBar != null;
+	}
+	
+	/**
+	 * Checks if there is a {@code ValueBar} connected.
+	 * 
+	 * @return true or false.
+	 */
+	public boolean hasValueBar(){
+		return mValueBar != null;
+	}
+	
+	/**
+	 * Checks if there is a {@code SaturationBar} connected.
+	 * 
+	 * @return true or false.
+	 */
+	public boolean hasSaturationBar(){
+		return mSaturationBar != null;
+	}
+	
+	/**
+	 * Checks if there is a {@code SVBar} connected.
+	 * 
+	 * @return true or false.
+	 */
+	public boolean hasSVBar(){
+		return mSVbar != null;
 	}
 
 	@Override

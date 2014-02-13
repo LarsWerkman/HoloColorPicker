@@ -404,7 +404,8 @@ public class ValueBar extends View {
 		mBarPointerPaint.setColor(mColor);
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
-			mPicker.changeOpacityBarColor(mColor);
+			if(mPicker.hasOpacityBar())
+				mPicker.changeOpacityBarColor(mColor);
 		}
 		invalidate();
 	}
