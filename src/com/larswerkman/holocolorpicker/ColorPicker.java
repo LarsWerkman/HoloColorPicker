@@ -262,6 +262,12 @@ public class ColorPicker extends View {
 	public OnColorChangedListener getOnColorChangedListener() {
 		return this.onColorChangedListener;
 	}
+	
+	
+	/**
+	 * Color of the latest entry of the listener.
+	 */
+	private int oldListenerColor;
 
 	private void init(AttributeSet attrs, int defStyle) {
 		final TypedArray a = getContext().obtainStyledAttributes(attrs,
@@ -673,8 +679,9 @@ public class ColorPicker extends View {
 			mCenterOldColor = color;
 			mCenterOldPaint.setColor(color);
 		}
-		if (onColorChangedListener != null) {
+		if (onColorChangedListener != null && color != oldListenerColor) {
 			onColorChangedListener.onColorChanged(color);
+			oldListenerColor = color;
 		}
 		invalidate();
 	}
