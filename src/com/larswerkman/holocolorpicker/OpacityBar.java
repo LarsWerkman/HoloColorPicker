@@ -139,7 +139,7 @@ public class OpacityBar extends View {
     private OnOpacityChangedListener onOpacityChangedListener;
 
     public interface OnOpacityChangedListener {
-        public void onOpacityChanged(int color);
+        public void onOpacityChanged(int opacity);
     }
 
     public void setOnOpacityChangedListener(OnOpacityChangedListener listener) {
