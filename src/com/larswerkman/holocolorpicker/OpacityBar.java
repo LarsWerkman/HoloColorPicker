@@ -132,6 +132,24 @@ public class OpacityBar extends View {
 	 */
 	private float mOpacToPosFactor;
 
+    /**
+     * Interface and listener so that changes in OpacityBar are sent
+     * to the host activity/fragment
+     */
+    private OnOpacityChangedListener onOpacityChangedListener;
+
+    public interface OnOpacityChangedListener {
+        public void onOpacityChanged(int color);
+    }
+
+    public void setOnOpacityChangedListener(OnOpacityChangedListener listener) {
+        this.onOpacityChangedListener = listener;
+    }
+
+    public OnOpacityChangedListener getOnOpacityChangedListener() {
+        return this.onOpacityChangedListener;
+    }
+
 	/**
 	 * {@code ColorPicker} instance used to control the ColorPicker.
 	 */
@@ -365,6 +383,7 @@ public class OpacityBar extends View {
 					invalidate();
 				}
 			}
+            onOpacityChangedListener.onOpacityChanged(getOpacity());
 			break;
 		case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;
