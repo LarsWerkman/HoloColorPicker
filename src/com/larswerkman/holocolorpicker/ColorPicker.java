@@ -219,6 +219,11 @@ public class ColorPicker extends View {
 	 */
 	private OnColorChangedListener onColorChangedListener;
 
+	/**
+	 * {@code onColorSelectedListener} instance of the onColorSelectedListener
+	 */
+	private OnColorSelectedListener onColorSelectedListener;
+
 	public ColorPicker(Context context) {
 		super(context);
 		init(null, 0);
@@ -246,6 +251,15 @@ public class ColorPicker extends View {
 	}
 
 	/**
+	 * An interface that is called whenever a new color has been selected.
+	 * Currently it is always called when the color wheel has been released.
+	 * 
+	 */
+	public interface OnColorSelectedListener {
+		public void onColorSelected(int color);
+	}
+
+	/**
 	 * Set a onColorChangedListener
 	 * 
 	 * @param {@code OnColorChangedListener}
@@ -262,12 +276,34 @@ public class ColorPicker extends View {
 	public OnColorChangedListener getOnColorChangedListener() {
 		return this.onColorChangedListener;
 	}
-	
+
+	/**
+	 * Set a onColorSelectedListener
+	 * 
+	 * @param {@code OnColorSelectedListener}
+	 */
+	public void setOnColorSelectedListener(OnColorSelectedListener listener) {
+		this.onColorSelectedListener = listener;
+	}
+
+	/**
+	 * Gets the onColorSelectedListener
+	 * 
+	 * @return {@code OnColorSelectedListener}
+	 */
+	public OnColorSelectedListener getOnColorSelectedListener() {
+		return this.onColorSelectedListener;
+	}
 	
 	/**
-	 * Color of the latest entry of the listener.
+	 * Color of the latest entry of the onColorChangedListener.
 	 */
-	private int oldListenerColor;
+	private int oldChangedListenerColor;
+	
+	/**
+	 * Color of the latest entry of the onColorSelectedListener.
+	 */
+	private int oldSelectedListenerColor;
 
 	private void init(AttributeSet attrs, int defStyle) {
 		final TypedArray a = getContext().obtainStyledAttributes(attrs,
@@ -604,7 +640,19 @@ public class ColorPicker extends View {
 		case MotionEvent.ACTION_UP:
 			mUserIsMovingPointer = false;
 			mCenterHaloPaint.setAlpha(0x00);
+			
+			if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
+				onColorSelectedListener.onColorSelected(mCenterNewColor);
+				oldSelectedListenerColor = mCenterNewColor;
+			}
+
 			invalidate();
+			break;
+		case MotionEvent.ACTION_CANCEL:
+			if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
+				onColorSelectedListener.onColorSelected(mCenterNewColor);
+				oldSelectedListenerColor = mCenterNewColor;
+			}
 			break;
 		}
 		return true;
@@ -678,9 +726,9 @@ public class ColorPicker extends View {
 			mCenterOldColor = color;
 			mCenterOldPaint.setColor(color);
 		}
-		if (onColorChangedListener != null && color != oldListenerColor) {
+		if (onColorChangedListener != null && color != oldChangedListenerColor ) {
 			onColorChangedListener.onColorChanged(color);
-			oldListenerColor = color;
+			oldChangedListenerColor  = color;
 		}
 		invalidate();
 	}
