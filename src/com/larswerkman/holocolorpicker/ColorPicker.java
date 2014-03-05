@@ -164,6 +164,16 @@ public class ColorPicker extends View {
 	 * @see #onDraw(Canvas)
 	 */
 	private float mTranslationOffset;
+	
+	/**
+	 * Distance between pointer and user touch in X-direction.
+	 */
+    	private float mSlopX;
+    
+	/**
+	 * Distance between pointer and user touch in Y-direction.
+	 */
+    	private float mSlopY;
 
 	/**
 	 * The pointer's position expressed as angle (in rad).
@@ -589,6 +599,8 @@ public class ColorPicker extends View {
 					&& x <= (pointerPosition[0] + mColorPointerHaloRadius)
 					&& y >= (pointerPosition[1] - mColorPointerHaloRadius)
 					&& y <= (pointerPosition[1] + mColorPointerHaloRadius)) {
+				mSlopX = x - pointerPosition[0];
+				mSlopY = y - pointerPosition[1];
 				mUserIsMovingPointer = true;
 				invalidate();
 			}
@@ -608,7 +620,7 @@ public class ColorPicker extends View {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (mUserIsMovingPointer) {
-				mAngle = (float) java.lang.Math.atan2(y, x);
+				mAngle = (float) java.lang.Math.atan2(y - mSlopY, x - mSlopX);
 				mPointerColor.setColor(calculateColor(mAngle));
 
 				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
