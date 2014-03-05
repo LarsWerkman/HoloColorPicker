@@ -83,13 +83,18 @@ picker.setOnColorChangedListener(this);
 
 //to turn of showing the old color
 picker.setShowOldCenterColor(false);
+
+//adding onChangeListeners to bars
+opacitybar.setOnOpacityChangeListener(new OnOpacityChangeListener …)
+valuebar.setOnValueChangeListener(new OnValueChangeListener …)
+saturationBar.setOnSaturationChangeListener(new OnSaturationChangeListener …)
 ```	
 
 <H2>Dependency</H2>
 Adding it as a dependency to your project.
 
 	dependencies {
-    	compile 'com.larswerkman:HoloColorPicker:1.3'
+    	compile 'com.larswerkman:HoloColorPicker:1.4'
 	}
 
 <H2>License</H2>
