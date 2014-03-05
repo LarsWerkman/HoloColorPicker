@@ -137,6 +137,11 @@ public class OpacityBar extends View {
      * to the host activity/fragment
      */
     private OnOpacityChangedListener onOpacityChangedListener;
+    
+	/**
+	 * Opacity of the latest entry of the onOpacityChangedListener.
+	 */
+	private int oldChangedListenerOpacity;
 
     public interface OnOpacityChangedListener {
         public void onOpacityChanged(int opacity);
@@ -383,7 +388,10 @@ public class OpacityBar extends View {
 					invalidate();
 				}
 			}
-            onOpacityChangedListener.onOpacityChanged(getOpacity());
+			if(onOpacityChangedListener != null && oldChangedListenerOpacity != getOpacity()){
+	            onOpacityChangedListener.onOpacityChanged(getOpacity());
+	            oldChangedListenerOpacity = getOpacity();
+			}
 			break;
 		case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;

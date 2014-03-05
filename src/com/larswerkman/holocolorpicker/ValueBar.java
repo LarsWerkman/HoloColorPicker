@@ -141,6 +141,29 @@ public class ValueBar extends View {
 	 * Used to toggle orientation between vertical and horizontal.
 	 */
 	private boolean mOrientation;
+	
+    /**
+     * Interface and listener so that changes in ValueBar are sent
+     * to the host activity/fragment
+     */
+    private OnValueChangedListener onValueChangedListener;
+    
+	/**
+	 * Value of the latest entry of the onValueChangedListener.
+	 */
+	private int oldChangedListenerValue;
+
+    public interface OnValueChangedListener {
+        public void onValueChanged(int value);
+    }
+
+    public void setOnValueChangedListener(OnValueChangedListener listener) {
+        this.onValueChangedListener = listener;
+    }
+
+    public OnValueChangedListener getOnValueChangedListener() {
+        return this.onValueChangedListener;
+    }
 
 	public ValueBar(Context context) {
 		super(context);
@@ -368,6 +391,10 @@ public class ValueBar extends View {
 					}
 					invalidate();
 				}
+			}
+			if(onValueChangedListener != null && oldChangedListenerValue != mColor){
+	            onValueChangedListener.onValueChanged(mColor);
+	            oldChangedListenerValue = mColor;
 			}
 			break;
 		case MotionEvent.ACTION_UP:

@@ -141,6 +141,29 @@ public class SaturationBar extends View {
 	 * Used to toggle orientation between vertical and horizontal.
 	 */
 	private boolean mOrientation;
+	
+    /**
+     * Interface and listener so that changes in SaturationBar are sent
+     * to the host activity/fragment
+     */
+    private OnSaturationChangedListener onSaturationChangedListener;
+    
+	/**
+	 * Saturation of the latest entry of the onSaturationChangedListener.
+	 */
+	private int oldChangedListenerSaturation;
+
+    public interface OnSaturationChangedListener {
+        public void onSaturationChanged(int saturation);
+    }
+
+    public void setOnSaturationChangedListener(OnSaturationChangedListener listener) {
+        this.onSaturationChangedListener = listener;
+    }
+
+    public OnSaturationChangedListener getOnSaturationChangedListener() {
+        return this.onSaturationChangedListener;
+    }
 
 	public SaturationBar(Context context) {
 		super(context);
@@ -370,6 +393,10 @@ public class SaturationBar extends View {
 					}
 					invalidate();
 				}
+			}
+			if(onSaturationChangedListener != null && oldChangedListenerSaturation != mColor){
+	            onSaturationChangedListener.onSaturationChanged(mColor);
+	            oldChangedListenerSaturation = mColor;
 			}
 			break;
 		case MotionEvent.ACTION_UP:
