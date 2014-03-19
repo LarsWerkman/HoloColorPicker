@@ -276,8 +276,8 @@ public class OpacityBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 			mBarLength = h - (mBarPointerHaloRadius * 2);
-			mBarRect.set(mBarPointerHaloRadius,
-					(mBarPointerHaloRadius - (mBarThickness / 2)),
+			mBarRect.set((mBarPointerHaloRadius - (mBarThickness / 2)),
+					mBarPointerHaloRadius,
 					(mBarPointerHaloRadius + (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)));
 		}
@@ -520,7 +520,6 @@ public class OpacityBar extends View {
 		state.putParcelable(STATE_PARENT, superState);
 		state.putFloatArray(STATE_COLOR, mHSVColor);
 		state.putInt(STATE_OPACITY, getOpacity());
-		state.putBoolean(STATE_ORIENTATION, ORIENTATION_HORIZONTAL);
 
 		return state;
 	}
@@ -534,6 +533,5 @@ public class OpacityBar extends View {
 
 		setColor(Color.HSVToColor(savedState.getFloatArray(STATE_COLOR)));
 		setOpacity(savedState.getInt(STATE_OPACITY));
-		mOrientation = savedState.getBoolean(STATE_ORIENTATION, ORIENTATION_DEFAULT);
 	}
 }

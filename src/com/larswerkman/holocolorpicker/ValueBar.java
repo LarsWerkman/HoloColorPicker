@@ -276,8 +276,8 @@ public class ValueBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 			mBarLength = h - (mBarPointerHaloRadius * 2);
-			mBarRect.set(mBarPointerHaloRadius,
-					(mBarPointerHaloRadius - (mBarThickness / 2)),
+			mBarRect.set((mBarPointerHaloRadius - (mBarThickness / 2)),
+					mBarPointerHaloRadius,
 					(mBarPointerHaloRadius + (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)));
 		}
@@ -507,7 +507,6 @@ public class ValueBar extends View {
 		float[] hsvColor = new float[3];
 		Color.colorToHSV(mColor, hsvColor);
 		state.putFloat(STATE_VALUE, hsvColor[2]);
-		state.putBoolean(STATE_ORIENTATION, ORIENTATION_HORIZONTAL);
 
 		return state;
 	}
@@ -521,6 +520,5 @@ public class ValueBar extends View {
 
 		setColor(Color.HSVToColor(savedState.getFloatArray(STATE_COLOR)));
 		setValue(savedState.getFloat(STATE_VALUE));
-		mOrientation = savedState.getBoolean(STATE_ORIENTATION, ORIENTATION_DEFAULT);
 	}
 }
