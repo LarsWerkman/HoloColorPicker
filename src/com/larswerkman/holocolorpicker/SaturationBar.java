@@ -276,8 +276,8 @@ public class SaturationBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 			mBarLength = h - (mBarPointerHaloRadius * 2);
-			mBarRect.set(mBarPointerHaloRadius,
-					(mBarPointerHaloRadius - (mBarThickness / 2)),
+			mBarRect.set((mBarPointerHaloRadius - (mBarThickness / 2)),
+                    mBarPointerHaloRadius,
 					(mBarPointerHaloRadius + (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)));
 		}
@@ -508,7 +508,6 @@ public class SaturationBar extends View {
 		Bundle state = new Bundle();
 		state.putParcelable(STATE_PARENT, superState);
 		state.putFloatArray(STATE_COLOR, mHSVColor);
-		state.putBoolean(STATE_ORIENTATION, mOrientation);
 		
 		float[] hsvColor = new float[3];
 		Color.colorToHSV(mColor, hsvColor);
@@ -526,6 +525,5 @@ public class SaturationBar extends View {
 
 		setColor(Color.HSVToColor(savedState.getFloatArray(STATE_COLOR)));
 		setSaturation(savedState.getFloat(STATE_SATURATION));
-		mOrientation = savedState.getBoolean(STATE_ORIENTATION, ORIENTATION_DEFAULT);
 	}
 }
