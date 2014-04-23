@@ -523,7 +523,7 @@ public class SVBar extends View {
 		} else {
 			state.putFloat(STATE_VALUE, hsvColor[2]);
 		}
-		state.putBoolean(STATE_ORIENTATION, ORIENTATION_HORIZONTAL);
+		state.putBoolean(STATE_ORIENTATION, mOrientation);
 
 		return state;
 	}
