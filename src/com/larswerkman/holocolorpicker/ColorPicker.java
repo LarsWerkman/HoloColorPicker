@@ -524,7 +524,6 @@ public class ColorPicker extends View {
 	public void setColor(int color) {
 		mAngle = colorToAngle(color);
 		mPointerColor.setColor(calculateColor(mAngle));
-		mCenterNewPaint.setColor(calculateColor(mAngle));
 
 		// check of the instance isn't null
 		if (mOpacityBar != null) {
@@ -563,6 +562,12 @@ public class ColorPicker extends View {
 			Color.colorToHSV(color, mHSV);
 			mValueBar.setValue(mHSV[2]);
 		}
+        mCenterNewPaint.setColor(color);
+        mCenterNewColor = color;
+        if (onColorChangedListener != null && color != oldChangedListenerColor ) {
+            onColorChangedListener.onColorChanged(color);
+            oldChangedListenerColor = color;
+        }
 
 		invalidate();
 	}
