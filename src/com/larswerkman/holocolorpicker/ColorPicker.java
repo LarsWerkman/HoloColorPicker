@@ -219,6 +219,13 @@ public class ColorPicker extends View {
 	 */
 	private SaturationBar mSaturationBar = null;
 
+        /**
+         * {@code TouchAnywhereOnColorWheelEnabled} instance used to control <br>
+         * if the color wheel accepts input anywhere on the wheel or just <br>
+         * on the halo.
+         */
+        private boolean mTouchAnywhereOnColorWheelEnabled = false;
+
 	/**
 	 * {@code ValueBar} instance used to control the Value bar.
 	 */
@@ -612,6 +619,13 @@ public class ColorPicker extends View {
 				setColor(getOldCenterColor());
 				invalidate();
 			}
+                        // Check whether the user pressed anywhere on the wheel.
+                        else if (Math.sqrt(x*x + y*y)  <= mColorWheelRadius + mColorPointerHaloRadius
+                                        && Math.sqrt(x*x + y*y) >= mColorWheelRadius - mColorPointerHaloRadius
+                                        && mTouchAnywhereOnColorWheelEnabled) {
+                                mUserIsMovingPointer = true;
+                                invalidate();
+                        }
 			// If user did not press pointer or center, report event not handled
 			else{
 				getParent().requestDisallowInterceptTouchEvent(false);
@@ -875,4 +889,12 @@ public class ColorPicker extends View {
 		mPointerColor.setColor(currentColor);
 		setNewCenterColor(currentColor);
 	}
+
+        public void setTouchAnywhereOnColorWheelEnabled(boolean TouchAnywhereOnColorWheelEnabled){
+                mTouchAnywhereOnColorWheelEnabled = TouchAnywhereOnColorWheelEnabled;
+        }
+
+        public boolean getTouchAnywhereOnColorWheel(){
+                return mTouchAnywhereOnColorWheelEnabled;
+        }
 }
