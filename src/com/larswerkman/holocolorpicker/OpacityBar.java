@@ -31,6 +31,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.larswerkman.holocolorpicker.R;
+
 public class OpacityBar extends View {
 
 	/*
@@ -107,7 +109,7 @@ public class OpacityBar extends View {
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
 	 * 
-	 * @see #onTouchEvent(MotionEvent)
+	 * @see #onTouchEvent(android.view.MotionEvent)
 	 */
 	private boolean mIsMovingPointer;
 

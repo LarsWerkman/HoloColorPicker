@@ -31,6 +31,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.larswerkman.holocolorpicker.R;
+
 /**
  * Displays a holo-themed color picker.
  * 
@@ -50,13 +52,7 @@ public class ColorPicker extends View {
 	private static final String STATE_SHOW_OLD_COLOR = "showColor";
 
 	/**
-	 * Colors to construct the color wheel using {@link SweepGradient}.
-	 * 
-	 * <p>
-	 * Note: The algorithm in {@link #normalizeColor(int)} highly depends on
-	 * these exact values. Be aware that {@link #setColor(int)} might break if
-	 * you change this array.
-	 * </p>
+	 * Colors to construct the color wheel using {@link android.graphics.SweepGradient}.
 	 */
 	private static final int[] COLORS = new int[] { 0xFFFF0000, 0xFFFF00FF,
 			0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
@@ -123,7 +119,7 @@ public class ColorPicker extends View {
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
 	 * 
-	 * @see #onTouchEvent(MotionEvent)
+	 * @see #onTouchEvent(android.view.MotionEvent)
 	 */
 	private boolean mUserIsMovingPointer = false;
 
@@ -161,7 +157,7 @@ public class ColorPicker extends View {
 	 * Note: (Re)calculated in {@link #onMeasure(int, int)}.
 	 * </p>
 	 * 
-	 * @see #onDraw(Canvas)
+	 * @see #onDraw(android.graphics.Canvas)
 	 */
 	private float mTranslationOffset;
 	
@@ -458,7 +454,7 @@ public class ColorPicker extends View {
 	}
 
 	private int ave(int s, int d, float p) {
-		return s + java.lang.Math.round(p * (d - s));
+		return s + Math.round(p * (d - s));
 	}
 
 	/**
@@ -543,7 +539,7 @@ public class ColorPicker extends View {
 			// Here will be checked which we shall use.
 			if (mHSV[1] < mHSV[2]) {
 				mSVbar.setSaturation(mHSV[1]);
-			} else { // if (mHSV[1] > mHSV[2]) {
+			} else if(mHSV[1] > mHSV[2]){
 				mSVbar.setValue(mHSV[2]);
 			}
 		}
@@ -618,7 +614,7 @@ public class ColorPicker extends View {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (mUserIsMovingPointer) {
-				mAngle = (float) java.lang.Math.atan2(y - mSlopY, x - mSlopX);
+				mAngle = (float) Math.atan2(y - mSlopY, x - mSlopX);
 				mPointerColor.setColor(calculateColor(mAngle));
 
 				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));

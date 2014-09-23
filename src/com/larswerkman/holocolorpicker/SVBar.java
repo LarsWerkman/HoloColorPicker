@@ -31,6 +31,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.larswerkman.holocolorpicker.R;
+
 public class SVBar extends View {
 
 	/*
@@ -108,7 +110,7 @@ public class SVBar extends View {
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
 	 * 
-	 * @see #onTouchEvent(MotionEvent)
+	 * @see #onTouchEvent(android.view.MotionEvent)
 	 */
 	private boolean mIsMovingPointer;
 
@@ -429,22 +431,20 @@ public class SVBar extends View {
 	 */
 	public void setColor(int color) {
 		int x1, y1;
-		if(mOrientation == ORIENTATION_HORIZONTAL) {
+		if(mOrientation) {
 			x1 = (mBarLength + mBarPointerHaloRadius);
 			y1 = mBarThickness;
-		}
-		else {
+		}        else {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
 		
 		Color.colorToHSV(color, mHSVColor);
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
-				x1, y1, new int[] {
-						0xffffffff, color, 0xff000000 }, null,
+				x1, y1, new int[] {Color.WHITE, color, Color.BLACK}, null,
 				Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
-		calculateColor(mBarPointerPosition);
+	    calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
@@ -462,27 +462,22 @@ public class SVBar extends View {
 	 */
 	private void calculateColor(int coord) {
 	    coord = coord - mBarPointerHaloRadius;
-	    if (coord < 0) {
-	    	coord = 0;
-	    } else if (coord > mBarLength) {
-	    	coord = mBarLength;
-	    }
-	    
-		if (coord > (mBarPointerHaloRadius + (mBarLength / 2))
-				&& coord < (mBarPointerHaloRadius + mBarLength)) {
+		if (coord > (mBarLength / 2) && (coord < mBarLength)) {
 			mColor = Color
 					.HSVToColor(new float[] {
-							mHSVColor[0],
-							1f,
-							(float) (1 - (mPosToSVFactor * (coord - (mBarPointerHaloRadius + (mBarLength / 2))))) });
-		} else if (coord > mBarPointerHaloRadius
-				&& coord < (mBarPointerHaloRadius + mBarLength)) {
-			mColor = Color.HSVToColor(new float[] { mHSVColor[0],
-					(float) ((mPosToSVFactor * (coord - mBarPointerHaloRadius))),
-					1f });
-		} else if (coord == mBarPointerHaloRadius) {
+							mHSVColor[0], 1f, 1 - (mPosToSVFactor * (coord - (mBarLength / 2)))
+                    });
+		} else if (coord > 0 && coord < mBarLength) {
+			mColor = Color.HSVToColor(new float[]{
+                    mHSVColor[0], (mPosToSVFactor * coord), 1f
+            });
+		} else if(coord == (mBarLength / 2)){
+            mColor = Color.HSVToColor(new float[]{
+                    mHSVColor[0], 1f, 1f
+            });
+        } else if (coord <= 0) {
 			mColor = Color.WHITE;
-		} else if (coord == mBarPointerHaloRadius + mBarLength) {
+		} else if (coord >= mBarLength) {
 			mColor = Color.BLACK;
 		}
 	}
@@ -502,7 +497,7 @@ public class SVBar extends View {
 	 * WARNING: Don't change the color picker. it is done already when the bar
 	 * is added to the ColorPicker
 	 * 
-	 * @see ColorPicker#addSVBar(SVBar)
+	 * @see ColorPicker#addSVBar(com.larswerkman.holocolorpicker.SVBar)
 	 * @param picker
 	 */
 	public void setColorPicker(ColorPicker picker) {
