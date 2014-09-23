@@ -220,7 +220,7 @@ public class ColorPicker extends View {
          * if the color wheel accepts input anywhere on the wheel or just <br>
          * on the halo.
          */
-        private boolean mTouchAnywhereOnColorWheelEnabled = false;
+        private boolean mTouchAnywhereOnColorWheelEnabled = true;
 
 	/**
 	 * {@code ValueBar} instance used to control the Value bar.
