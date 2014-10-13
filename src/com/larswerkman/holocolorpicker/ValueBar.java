@@ -150,13 +150,21 @@ public class ValueBar extends View {
      */
     private OnValueChangedListener onValueChangedListener;
     
+    private OnValueSelectedListener onValueSelectedListener;
+    
 	/**
 	 * Value of the latest entry of the onValueChangedListener.
 	 */
 	private int oldChangedListenerValue;
 
+	private int oldSelectedListenerValue;
+	
     public interface OnValueChangedListener {
         public void onValueChanged(int value);
+    }
+    
+    public interface OnValueSelectedListener {
+    	public void onValueSelected(int value);
     }
 
     public void setOnValueChangedListener(OnValueChangedListener listener) {
@@ -165,6 +173,16 @@ public class ValueBar extends View {
 
     public OnValueChangedListener getOnValueChangedListener() {
         return this.onValueChangedListener;
+    }
+    
+    public void setOnValueSelectedListener(OnValueSelectedListener listener) 
+    {
+    	this.onValueSelectedListener = listener;
+    }
+    
+    public OnValueSelectedListener getOnValueSelectedListener()
+    {
+    	return this.onValueSelectedListener;
     }
 
 	public ValueBar(Context context) {
@@ -401,6 +419,13 @@ public class ValueBar extends View {
 			break;
 		case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;
+			
+			if(onValueSelectedListener != null && oldSelectedListenerValue != mColor) {
+				onValueSelectedListener.onValueSelected(mColor);
+				oldSelectedListenerValue = mColor;
+			}
+			
+			invalidate();
 			break;
 		}
 		return true;

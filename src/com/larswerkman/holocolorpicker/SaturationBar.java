@@ -150,13 +150,27 @@ public class SaturationBar extends View {
      */
     private OnSaturationChangedListener onSaturationChangedListener;
     
+    /**
+     * Interface and listener so that the selected saturation is sent to the host activity/fragment
+     */
+    private OnSaturationSelectedListener onSaturationSelectedListener;
+    
 	/**
 	 * Saturation of the latest entry of the onSaturationChangedListener.
 	 */
 	private int oldChangedListenerSaturation;
+	
+	/**
+	 * Saturation of the latest entry of the OnSaturationSelectedListener.
+	 */
+	private int oldSelectedListenerSaturation;
 
     public interface OnSaturationChangedListener {
-        public void onSaturationChanged(int saturation);
+        public void onSaturationChanged(int hsvColor);
+    }
+
+    public interface OnSaturationSelectedListener {
+    	public void OnStaturationSelected(int hsvColor);
     }
 
     public void setOnSaturationChangedListener(OnSaturationChangedListener listener) {
@@ -165,6 +179,14 @@ public class SaturationBar extends View {
 
     public OnSaturationChangedListener getOnSaturationChangedListener() {
         return this.onSaturationChangedListener;
+    }
+    
+    public void setOnSaturationSelectedListener(OnSaturationSelectedListener listener) {
+        this.onSaturationSelectedListener = listener;
+    }
+
+    public OnSaturationSelectedListener getOnSaturationSelectedListener() {
+        return this.onSaturationSelectedListener;
     }
 
 	public SaturationBar(Context context) {
@@ -403,6 +425,14 @@ public class SaturationBar extends View {
 			break;
 		case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;
+			
+			if(onSaturationSelectedListener != null && oldSelectedListenerSaturation != mColor)
+			{
+				onSaturationSelectedListener.OnStaturationSelected(mColor);
+				oldSelectedListenerSaturation = mColor;
+			}
+			
+			invalidate();
 			break;
 		}
 		return true;
