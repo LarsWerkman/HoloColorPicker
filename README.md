@@ -1,6 +1,6 @@
 <h1>Android Holo ColorPicker</h1>
 
-Marie Schweiz made a beautifull new design for the Holo ColorPicker which added a lot of new functionality.
+Marie Schweiz <http://marie-schweiz.de/> made a beautifull new design for the Holo ColorPicker which added a lot of new functionality.
 
 You can now set the Saturation and Value of a color.
 Also its possible to set the Opacity for a color.
