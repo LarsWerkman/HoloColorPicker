@@ -13,7 +13,7 @@ Demo can be found on my Google Drive [here](https://docs.google.com/file/d/0Bwcl
 ![image](https://lh4.googleusercontent.com/-GtJYDCQdnVo/UVW4ML7WIuI/AAAAAAAAAj4/YKHEUnhvLhA//framed_colorpicker.png)
 
 <h3>UDPATE</h3>
-Now bars can change there orientation, Thanks to [tonyr59h](https://github.com/tonyr59h)
+Now bars can change their orientation, Thanks to [tonyr59h](https://github.com/tonyr59h)
 also the gradle build version was updated to 0.7.+
 ![image](https://lh5.googleusercontent.com/-3KSukk_S94Y/UvKiNER-OBI/AAAAAAAAA-k/8SPfOmFhLjE//device-2014-02-05-180704_framed.png)
 
