@@ -566,6 +566,7 @@ public class ColorPicker extends View {
 			mValueBar.setValue(mHSV[2]);
 		}
         setNewCenterColor(color);
+        setOldCenterColor(color);
 	}
 
 	/**
