@@ -333,7 +333,7 @@ public class OpacityBar extends View {
 		canvas.drawCircle(cX, cY, mBarPointerHaloRadius, mBarPointerHaloPaint);
 		// Draw the pointer.
 		canvas.drawCircle(cX, cY, mBarPointerRadius, mBarPointerPaint);
-	};
+	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -437,8 +437,7 @@ public class OpacityBar extends View {
 	/**
 	 * Set the pointer on the bar. With the opacity value.
 	 * 
-	 * @param saturation
-	 *            float between 0 > 255
+	 * @param opacity float between 0 and 255
 	 */
 	public void setOpacity(int opacity) {
 		mBarPointerPosition = Math.round((mOpacToPosFactor * opacity))
@@ -471,8 +470,7 @@ public class OpacityBar extends View {
 	/**
 	 * Calculate the color selected by the pointer on the bar.
 	 * 
-	 * @param coord
-	 *            Coordinate of the pointer.
+	 * @param coord Coordinate of the pointer.
 	 */
         private void calculateColor(int coord) {
     	    coord = coord - mBarPointerHaloRadius;

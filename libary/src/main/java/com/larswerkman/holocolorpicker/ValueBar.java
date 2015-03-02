@@ -442,8 +442,7 @@ public class ValueBar extends View {
 	/**
 	 * Set the pointer on the bar. With the opacity value.
 	 * 
-	 * @param value
-	 *            float between 0 > 1
+	 * @param value float between 0 and 1
 	 */
 	public void setValue(float value) {
 		mBarPointerPosition = Math
@@ -461,8 +460,7 @@ public class ValueBar extends View {
         /**
          * Calculate the color selected by the pointer on the bar.
          * 
-         * @param coord
-         *            Coordinate of the pointer.
+         * @param coord Coordinate of the pointer.
          */
 	private void calculateColor(int coord) {
 	    coord = coord - mBarPointerHaloRadius;

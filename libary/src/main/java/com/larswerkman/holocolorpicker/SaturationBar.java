@@ -447,8 +447,7 @@ public class SaturationBar extends View {
 	/**
 	 * Set the pointer on the bar. With the opacity value.
 	 * 
-	 * @param saturation
-	 *            float between 0 > 1
+	 * @param saturation float between 0 and 1
 	 */
 	public void setSaturation(float saturation) {
 		mBarPointerPosition = Math.round((mSatToPosFactor * saturation))
@@ -466,8 +465,7 @@ public class SaturationBar extends View {
         /**
          * Calculate the color selected by the pointer on the bar.
          * 
-         * @param coord
-         *            Coordinate of the pointer.
+         * @param coord Coordinate of the pointer.
          */
 	private void calculateColor(int coord) {
 	    coord = coord - mBarPointerHaloRadius;

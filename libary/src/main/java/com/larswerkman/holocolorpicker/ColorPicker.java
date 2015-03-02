@@ -275,7 +275,7 @@ public class ColorPicker extends View {
 	/**
 	 * Set a onColorChangedListener
 	 * 
-	 * @param {@code OnColorChangedListener}
+	 * @param listener {@code OnColorChangedListener}
 	 */
 	public void setOnColorChangedListener(OnColorChangedListener listener) {
 		this.onColorChangedListener = listener;
@@ -293,7 +293,7 @@ public class ColorPicker extends View {
 	/**
 	 * Set a onColorSelectedListener
 	 * 
-	 * @param {@code OnColorSelectedListener}
+	 * @param listener {@code OnColorSelectedListener}
 	 */
 	public void setOnColorSelectedListener(OnColorSelectedListener listener) {
 		this.onColorSelectedListener = listener;
@@ -467,8 +467,7 @@ public class ColorPicker extends View {
 	/**
 	 * Calculate the color using the supplied angle.
 	 * 
-	 * @param angle
-	 *            The selected color's position expressed as angle (in rad).
+	 * @param angle The selected color's position expressed as angle (in rad).
 	 * 
 	 * @return The ARGB value of the color on the color wheel at the specified
 	 *         angle.
@@ -513,12 +512,11 @@ public class ColorPicker extends View {
 	}
 
 	/**
-	 * Set the color to be highlighted by the pointer. </br> </br> If the
+	 * Set the color to be highlighted by the pointer. If the
 	 * instances {@code SVBar} and the {@code OpacityBar} aren't null the color
 	 * will also be set to them
 	 * 
-	 * @param color
-	 *            The RGB value of the color to highlight. If this is not a
+	 * @param color The RGB value of the color to highlight. If this is not a
 	 *            color displayed on the color wheel a very simple algorithm is
 	 *            used to map it to the color wheel. The resulting color often
 	 *            won't look close to the original color. This is especially
@@ -571,8 +569,7 @@ public class ColorPicker extends View {
 	/**
 	 * Convert a color to an angle.
 	 * 
-	 * @param color
-	 *            The RGB value of the color to "find" on the color wheel.
+	 * @param color The RGB value of the color to "find" on the color wheel.
 	 * 
 	 * @return The angle (in rad) the "normalized" color is displayed on the
 	 *         color wheel.
@@ -583,7 +580,7 @@ public class ColorPicker extends View {
 		
 		return (float) Math.toRadians(-colors[0]);
 	}
-	
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		getParent().requestDisallowInterceptTouchEvent(true);
@@ -682,8 +679,7 @@ public class ColorPicker extends View {
 	 * Calculate the pointer's coordinates on the color wheel using the supplied
 	 * angle.
 	 * 
-	 * @param angle
-	 *            The position of the pointer expressed as angle (in rad).
+	 * @param angle The position of the pointer expressed as angle (in rad).
 	 * 
 	 * @return The coordinates of the pointer's center in our internal
 	 *         coordinate system.
@@ -698,8 +694,7 @@ public class ColorPicker extends View {
 	/**
 	 * Add a Saturation/Value bar to the color wheel.
 	 * 
-	 * @param bar
-	 *            The instance of the Saturation/Value bar.
+	 * @param bar The instance of the Saturation/Value bar.
 	 */
 	public void addSVBar(SVBar bar) {
 		mSVbar = bar;
@@ -711,8 +706,7 @@ public class ColorPicker extends View {
 	/**
 	 * Add a Opacity bar to the color wheel.
 	 * 
-	 * @param bar
-	 *            The instance of the Opacity bar.
+	 * @param bar The instance of the Opacity bar.
 	 */
 	public void addOpacityBar(OpacityBar bar) {
 		mOpacityBar = bar;
@@ -736,8 +730,7 @@ public class ColorPicker extends View {
 	/**
 	 * Change the color of the center which indicates the new color.
 	 * 
-	 * @param color
-	 *            int of the color.
+	 * @param color int of the color.
 	 */
 	public void setNewCenterColor(int color) {
 		mCenterNewColor = color;
@@ -756,8 +749,7 @@ public class ColorPicker extends View {
 	/**
 	 * Change the color of the center which indicates the old color.
 	 * 
-	 * @param color
-	 *            int of the color.
+	 * @param color int of the color.
 	 */
 	public void setOldCenterColor(int color) {
 		mCenterOldColor = color;
@@ -787,8 +779,7 @@ public class ColorPicker extends View {
 	 * Used to change the color of the {@code OpacityBar} used by the
 	 * {@code SVBar} if there is an change in color.
 	 * 
-	 * @param color
-	 *            int of the color used to change the opacity bar color.
+	 * @param color int of the color used to change the opacity bar color.
 	 */
 	public void changeOpacityBarColor(int color) {
 		if (mOpacityBar != null) {
@@ -811,8 +802,7 @@ public class ColorPicker extends View {
 	/**
 	 * Used to change the color of the {@code ValueBar}.
 	 * 
-	 * @param color
-	 *            int of the color used to change the opacity bar color.
+	 * @param color int of the color used to change the opacity bar color.
 	 */
 	public void changeValueBarColor(int color) {
 		if (mValueBar != null) {
