@@ -94,7 +94,7 @@ saturationBar.setOnSaturationChangeListener(new OnSaturationChangeListener …)
 Adding it as a dependency to your project.
 
 	dependencies {
-    	compile 'com.larswerkman:HoloColorPicker:1.4'
+    	compile 'com.larswerkman:HoloColorPicker:1.5'
 	}
 
 <H2>License</H2>
