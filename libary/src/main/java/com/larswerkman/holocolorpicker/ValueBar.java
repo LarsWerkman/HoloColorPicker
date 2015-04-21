@@ -358,6 +358,10 @@ public class ValueBar extends View {
 				mBarPointerPosition = Math.round(dimen);
 				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
+                                if (mPicker != null) {
+                                        mPicker.setNewCenterColor(mColor);
+                                        mPicker.changeOpacityBarColor(mColor);
+                                }
 				invalidate();
 			}
 			break;
@@ -368,31 +372,19 @@ public class ValueBar extends View {
 						&& dimen <= (mBarPointerHaloRadius + mBarLength)) {
 					mBarPointerPosition = Math.round(dimen);
 					calculateColor(Math.round(dimen));
-					mBarPointerPaint.setColor(mColor);
-					if (mPicker != null) {
-						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
-					}
-					invalidate();
 				} else if (dimen < mBarPointerHaloRadius) {
 					mBarPointerPosition = mBarPointerHaloRadius;
 					mColor = Color.HSVToColor(mHSVColor);
-					mBarPointerPaint.setColor(mColor);
-					if (mPicker != null) {
-						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
-					}
-					invalidate();
 				} else if (dimen > (mBarPointerHaloRadius + mBarLength)) {
 					mBarPointerPosition = mBarPointerHaloRadius + mBarLength;
 					mColor = Color.BLACK;
-					mBarPointerPaint.setColor(mColor);
-					if (mPicker != null) {
-						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
-					}
-					invalidate();
 				}
+                                mBarPointerPaint.setColor(mColor);
+                                if (mPicker != null) {
+                                        mPicker.setNewCenterColor(mColor);
+                                        mPicker.changeOpacityBarColor(mColor);
+                                }
+                                invalidate();
 			}
 			if(onValueChangedListener != null && oldChangedListenerValue != mColor){
 	            onValueChangedListener.onValueChanged(mColor);

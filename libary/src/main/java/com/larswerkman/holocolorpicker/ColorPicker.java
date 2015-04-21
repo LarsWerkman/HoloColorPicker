@@ -615,6 +615,21 @@ public class ColorPicker extends View {
                                         && Math.sqrt(x*x + y*y) >= mColorWheelRadius - mColorPointerHaloRadius
                                         && mTouchAnywhereOnColorWheelEnabled) {
                                 mUserIsMovingPointer = true;
+				mAngle = (float) Math.atan2(y - mSlopY, x - mSlopX);
+				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
+				mPointerColor.setColor(calculateColor(mAngle));
+				if (mOpacityBar != null) {
+					mOpacityBar.setColor(mColor);
+				}
+				if (mValueBar != null) {
+					mValueBar.setColor(mColor);
+				}
+				if (mSaturationBar != null) {
+					mSaturationBar.setColor(mColor);
+				}
+				if (mSVbar != null) {
+					mSVbar.setColor(mColor);
+				}
                                 invalidate();
                         }
 			// If user did not press pointer or center, report event not handled

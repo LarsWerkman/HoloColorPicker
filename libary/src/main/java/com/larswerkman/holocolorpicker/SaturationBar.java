@@ -357,6 +357,11 @@ public class SaturationBar extends View {
 				mBarPointerPosition = Math.round(dimen);
 				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
+                                if (mPicker != null) {
+                                        mPicker.setNewCenterColor(mColor);
+                                        mPicker.changeValueBarColor(mColor);
+                                        mPicker.changeOpacityBarColor(mColor);
+                                }
 				invalidate();
 			}
 			break;
@@ -367,34 +372,20 @@ public class SaturationBar extends View {
 						&& dimen <= (mBarPointerHaloRadius + mBarLength)) {
 					mBarPointerPosition = Math.round(dimen);
 					calculateColor(Math.round(dimen));
-					mBarPointerPaint.setColor(mColor);
-					if (mPicker != null) {
-						mPicker.setNewCenterColor(mColor);
-						mPicker.changeValueBarColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
-					}
-					invalidate();
 				} else if (dimen < mBarPointerHaloRadius) {
 					mBarPointerPosition = mBarPointerHaloRadius;
 					mColor = Color.WHITE;
-					mBarPointerPaint.setColor(mColor);
-					if (mPicker != null) {
-						mPicker.setNewCenterColor(mColor);
-						mPicker.changeValueBarColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
-					}
-					invalidate();
 				} else if (dimen > (mBarPointerHaloRadius + mBarLength)) {
 					mBarPointerPosition = mBarPointerHaloRadius + mBarLength;
 					mColor = Color.HSVToColor(mHSVColor);
-					mBarPointerPaint.setColor(mColor);
-					if (mPicker != null) {
-						mPicker.setNewCenterColor(mColor);
-						mPicker.changeValueBarColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
-					}
-					invalidate();
 				}
+                                mBarPointerPaint.setColor(mColor);
+                                if (mPicker != null) {
+                                        mPicker.setNewCenterColor(mColor);
+                                        mPicker.changeValueBarColor(mColor);
+                                        mPicker.changeOpacityBarColor(mColor);
+                                }
+                                invalidate();
 			}
 			if(onSaturationChangedListener != null && oldChangedListenerSaturation != mColor){
 	            onSaturationChangedListener.onSaturationChanged(mColor);
