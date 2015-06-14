@@ -370,8 +370,8 @@ public class ValueBar extends View {
 					calculateColor(Math.round(dimen));
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
+						mColor = mPicker.changeOpacityBarColor(mColor);
 						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
 				} else if (dimen < mBarPointerHaloRadius) {
@@ -379,8 +379,8 @@ public class ValueBar extends View {
 					mColor = Color.HSVToColor(mHSVColor);
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
+						mColor = mPicker.changeOpacityBarColor(mColor);
 						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
 				} else if (dimen > (mBarPointerHaloRadius + mBarLength)) {
@@ -388,8 +388,8 @@ public class ValueBar extends View {
 					mColor = Color.BLACK;
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
+						mColor = mPicker.changeOpacityBarColor(mColor);
 						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
 				}
@@ -413,13 +413,12 @@ public class ValueBar extends View {
 	 * 
 	 * @param color
 	 */
-	public void setColor(int color) {
+	public int setColor(int color) {
 		int x1, y1;
-		if(mOrientation == ORIENTATION_HORIZONTAL) {
+		if(mOrientation) {
 			x1 = (mBarLength + mBarPointerHaloRadius);
 			y1 = mBarThickness;
-		}
-		else {
+		} else {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
@@ -431,12 +430,8 @@ public class ValueBar extends View {
 		mBarPaint.setShader(shader);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
-		if (mPicker != null) {
-			mPicker.setNewCenterColor(mColor);
-			if(mPicker.hasOpacityBar())
-				mPicker.changeOpacityBarColor(mColor);
-		}
 		invalidate();
+		return mColor;
 	}
 
 	/**
@@ -451,8 +446,8 @@ public class ValueBar extends View {
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
 		if (mPicker != null) {
+			mColor = mPicker.changeOpacityBarColor(mColor);
 			mPicker.setNewCenterColor(mColor);
-			mPicker.changeOpacityBarColor(mColor);
 		}
 		invalidate();
 	}

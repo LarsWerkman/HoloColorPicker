@@ -409,13 +409,12 @@ public class OpacityBar extends View {
 	 * 
 	 * @param color
 	 */
-	public void setColor(int color) {
+	public int setColor(int color) {
 		int x1, y1;
-		if(mOrientation == ORIENTATION_HORIZONTAL) {
+		if(mOrientation) {
 			x1 = (mBarLength + mBarPointerHaloRadius);
 			y1 = mBarThickness;
-		}
-		else {
+		} else {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
@@ -428,10 +427,11 @@ public class OpacityBar extends View {
 		mBarPaint.setShader(shader);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
-		if (mPicker != null) {
-			mPicker.setNewCenterColor(mColor);
-		}
+//		if (mPicker != null) {
+//			mPicker.setNewCenterColor(mColor);
+//		}
 		invalidate();
+		return mColor;
 	}
 
 	/**
