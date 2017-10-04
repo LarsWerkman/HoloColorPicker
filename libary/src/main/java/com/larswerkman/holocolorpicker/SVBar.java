@@ -31,8 +31,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.larswerkman.holocolorpicker.R;
-
 public class SVBar extends View {
 
 	/*
@@ -110,7 +108,7 @@ public class SVBar extends View {
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
 	 * 
-	 * @see #onTouchEvent(android.view.MotionEvent)
+	 * @see #onTouchEvent(MotionEvent)
 	 */
 	private boolean mIsMovingPointer;
 
@@ -275,7 +273,7 @@ public class SVBar extends View {
 					Shader.TileMode.CLAMP);
 			Color.colorToHSV(0xff81ff00, mHSVColor);
 		}
-		
+
 		mBarPaint.setShader(shader);
 		mPosToSVFactor = 1 / ((float) mBarLength / 2);
 		mSVToPosFactor = ((float) mBarLength / 2) / 1;
@@ -309,7 +307,7 @@ public class SVBar extends View {
 			cX = mBarPointerHaloRadius;
 			cY = mBarPointerPosition;
 		}
-		
+
 		// Draw the pointer halo.
 		canvas.drawCircle(cX, cY, mBarPointerHaloRadius, mBarPointerHaloPaint);
 		// Draw the pointer.
@@ -377,6 +375,17 @@ public class SVBar extends View {
 			break;
 		case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;
+			if(mPicker.onColorSelectedListener!= null){
+				mPicker.onColorSelectedListener.onColorSelected(mColor);
+				mPicker.oldSelectedListenerColor = mColor;
+			}
+			break;
+		case MotionEvent.ACTION_CANCEL:
+			mIsMovingPointer = false;
+			if(mPicker.onColorSelectedListener!= null){
+				mPicker.onColorSelectedListener.onColorSelected(mColor);
+				mPicker.oldSelectedListenerColor = mColor;
+			}
 			break;
 		}
 		return true;
@@ -384,7 +393,7 @@ public class SVBar extends View {
 
 	/**
 	 * Set the pointer on the bar. With the saturation value.
-	 * 
+	 *
 	 * @param saturation float between 0 and 1
 	 */
 	public void setSaturation(float saturation) {
@@ -403,7 +412,7 @@ public class SVBar extends View {
 
 	/**
 	 * Set the pointer on the bar. With the Value value.
-	 * 
+	 *
 	 * @param value float between 0 and 1
 	 */
 	public void setValue(float value) {
@@ -424,7 +433,7 @@ public class SVBar extends View {
 	 * Set the bar color. <br>
 	 * <br>
 	 * Its discouraged to use this method.
-	 * 
+	 *
 	 * @param color
 	 */
 	public void setColor(int color) {
@@ -436,7 +445,7 @@ public class SVBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
-		
+
 		Color.colorToHSV(color, mHSVColor);
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
 				x1, y1, new int[] {Color.WHITE, color, Color.BLACK}, null,
@@ -454,7 +463,7 @@ public class SVBar extends View {
 
 	/**
 	 * Calculate the color selected by the pointer on the bar.
-	 * 
+	 *
 	 * @param coord Coordinate of the pointer.
 	 */
 	private void calculateColor(int coord) {
@@ -481,7 +490,7 @@ public class SVBar extends View {
 
 	/**
 	 * Get the currently selected color.
-	 * 
+	 *
 	 * @return The ARGB value of the currently selected color.
 	 */
 	public int getColor() {
@@ -493,7 +502,7 @@ public class SVBar extends View {
 	 * <br>
 	 * WARNING: Don't change the color picker. it is done already when the bar
 	 * is added to the ColorPicker
-	 * 
+	 *
 	 * @see com.larswerkman.holocolorpicker.ColorPicker#addSVBar(SVBar)
 	 * @param picker
 	 */

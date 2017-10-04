@@ -31,8 +31,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.larswerkman.holocolorpicker.R;
-
 public class OpacityBar extends View {
 
 	/*
@@ -109,7 +107,7 @@ public class OpacityBar extends View {
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
 	 * 
-	 * @see #onTouchEvent(android.view.MotionEvent)
+	 * @see #onTouchEvent(MotionEvent)
 	 */
 	private boolean mIsMovingPointer;
 
@@ -139,7 +137,7 @@ public class OpacityBar extends View {
      * to the host activity/fragment
      */
     private OnOpacityChangedListener onOpacityChangedListener;
-    
+
 	/**
 	 * Opacity of the latest entry of the onOpacityChangedListener.
 	 */
@@ -262,7 +260,7 @@ public class OpacityBar extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		
+
 		// Fill the rectangle instance based on orientation
 		int x1, y1;
 		if (mOrientation == ORIENTATION_HORIZONTAL) {
@@ -297,14 +295,14 @@ public class OpacityBar extends View {
 							0x0081ff00, 0xff81ff00 }, null, Shader.TileMode.CLAMP);
 			Color.colorToHSV(0xff81ff00, mHSVColor);
 		}
-		
+
 		mBarPaint.setShader(shader);
 		mPosToOpacFactor = 0xFF / ((float) mBarLength);
 		mOpacToPosFactor = ((float) mBarLength) / 0xFF;
-		
+
 		float[] hsvColor = new float[3];
 		Color.colorToHSV(mColor, hsvColor);
-		
+
 		if (!isInEditMode()){
 			mBarPointerPosition = Math.round((mOpacToPosFactor * Color.alpha(mColor))
 					+ mBarPointerHaloRadius);
@@ -328,7 +326,7 @@ public class OpacityBar extends View {
 			cX = mBarPointerHaloRadius;
 			cY = mBarPointerPosition;
 		}
-		
+
 		// Draw the pointer halo.
 		canvas.drawCircle(cX, cY, mBarPointerHaloRadius, mBarPointerHaloPaint);
 		// Draw the pointer.
@@ -395,8 +393,19 @@ public class OpacityBar extends View {
 	            oldChangedListenerOpacity = getOpacity();
 			}
 			break;
-		case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;
+			if(mPicker.onColorSelectedListener!= null){
+				mPicker.onColorSelectedListener.onColorSelected(mColor);
+				mPicker.oldSelectedListenerColor = mColor;
+			}
+			break;
+		case MotionEvent.ACTION_CANCEL:
+			mIsMovingPointer = false;
+			if(mPicker.onColorSelectedListener!= null){
+				mPicker.onColorSelectedListener.onColorSelected(mColor);
+				mPicker.oldSelectedListenerColor = mColor;
+			}
 			break;
 		}
 		return true;
@@ -406,7 +415,7 @@ public class OpacityBar extends View {
 	 * Set the bar color. <br>
 	 * <br>
 	 * Its discouraged to use this method.
-	 * 
+	 *
 	 * @param color
 	 */
 	public void setColor(int color) {
@@ -419,7 +428,7 @@ public class OpacityBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
-		
+
 		Color.colorToHSV(color, mHSVColor);
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
 				x1, y1, new int[] {
@@ -436,7 +445,7 @@ public class OpacityBar extends View {
 
 	/**
 	 * Set the pointer on the bar. With the opacity value.
-	 * 
+	 *
 	 * @param opacity float between 0 and 255
 	 */
 	public void setOpacity(int opacity) {
@@ -452,7 +461,7 @@ public class OpacityBar extends View {
 
 	/**
 	 * Get the currently selected opacity.
-	 * 
+	 *
 	 * @return The int value of the currently selected opacity.
 	 */
 	public int getOpacity() {
@@ -469,7 +478,7 @@ public class OpacityBar extends View {
 
 	/**
 	 * Calculate the color selected by the pointer on the bar.
-	 * 
+	 *
 	 * @param coord Coordinate of the pointer.
 	 */
         private void calculateColor(int coord) {
@@ -492,7 +501,7 @@ public class OpacityBar extends View {
 
 	/**
 	 * Get the currently selected color.
-	 * 
+	 *
 	 * @return The ARGB value of the currently selected color.
 	 */
 	public int getColor() {
@@ -504,7 +513,7 @@ public class OpacityBar extends View {
 	 * <br>
 	 * WARNING: Don't change the color picker. it is done already when the bar
 	 * is added to the ColorPicker
-	 * 
+	 *
 	 * @see com.larswerkman.holocolorpicker.ColorPicker#addSVBar(SVBar)
 	 * @param picker
 	 */

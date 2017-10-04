@@ -31,8 +31,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.larswerkman.holocolorpicker.R;
-
 /**
  * Displays a holo-themed color picker.
  * 
@@ -52,7 +50,7 @@ public class ColorPicker extends View {
 	private static final String STATE_SHOW_OLD_COLOR = "showColor";
 
 	/**
-	 * Colors to construct the color wheel using {@link android.graphics.SweepGradient}.
+	 * Colors to construct the color wheel using {@link SweepGradient}.
 	 */
 	private static final int[] COLORS = new int[] { 0xFFFF0000, 0xFFFF00FF,
 			0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
@@ -118,8 +116,8 @@ public class ColorPicker extends View {
 	/**
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
-	 * 
-	 * @see #onTouchEvent(android.view.MotionEvent)
+	 *
+	 * @see #onTouchEvent(MotionEvent)
 	 */
 	private boolean mUserIsMovingPointer = false;
 
@@ -132,7 +130,7 @@ public class ColorPicker extends View {
 	 * The ARGB value of the center with the old selected color.
 	 */
 	private int mCenterOldColor;
-	
+
 	/**
 	 * Whether to show the old color in the center or not.
 	 */
@@ -145,19 +143,19 @@ public class ColorPicker extends View {
 
 	/**
 	 * Number of pixels the origin of this view is moved in X- and Y-direction.
-	 * 
+	 *
 	 * <p>
 	 * We use the center of this (quadratic) View as origin of our internal
 	 * coordinate system. Android uses the upper left corner as origin for the
 	 * View-specific coordinate system. So this is the value we use to translate
 	 * from one coordinate system to the other.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * Note: (Re)calculated in {@link #onMeasure(int, int)}.
 	 * </p>
-	 * 
-	 * @see #onDraw(android.graphics.Canvas)
+	 *
+	 * @see #onDraw(Canvas)
 	 */
 	private float mTranslationOffset;
 	
@@ -235,7 +233,7 @@ public class ColorPicker extends View {
 	/**
 	 * {@code onColorSelectedListener} instance of the onColorSelectedListener
 	 */
-	private OnColorSelectedListener onColorSelectedListener;
+	protected OnColorSelectedListener onColorSelectedListener;
 
 	public ColorPicker(Context context) {
 		super(context);
@@ -316,7 +314,7 @@ public class ColorPicker extends View {
 	/**
 	 * Color of the latest entry of the onColorSelectedListener.
 	 */
-	private int oldSelectedListenerColor;
+	protected int oldSelectedListenerColor;
 
 	private void init(AttributeSet attrs, int defStyle) {
 		final TypedArray a = getContext().obtainStyledAttributes(attrs,
@@ -659,9 +657,9 @@ public class ColorPicker extends View {
 			mCenterHaloPaint.setAlpha(0x00);
 			
 			if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
-				onColorSelectedListener.onColorSelected(mCenterNewColor);
-				oldSelectedListenerColor = mCenterNewColor;
-			}
+			onColorSelectedListener.onColorSelected(mCenterNewColor);
+			oldSelectedListenerColor = mCenterNewColor;
+		}
 
 			invalidate();
 			break;
