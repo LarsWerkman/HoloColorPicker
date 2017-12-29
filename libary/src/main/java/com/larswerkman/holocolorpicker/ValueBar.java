@@ -31,8 +31,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.larswerkman.holocolorpicker.R;
-
 public class ValueBar extends View {
 
 	/*
@@ -109,7 +107,7 @@ public class ValueBar extends View {
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
 	 * 
-	 * @see #onTouchEvent(android.view.MotionEvent)
+	 * @see #onTouchEvent(MotionEvent)
 	 */
 	private boolean mIsMovingPointer;
 
@@ -143,13 +141,13 @@ public class ValueBar extends View {
 	 * Used to toggle orientation between vertical and horizontal.
 	 */
 	private boolean mOrientation;
-	
+
     /**
      * Interface and listener so that changes in ValueBar are sent
      * to the host activity/fragment
      */
     private OnValueChangedListener onValueChangedListener;
-    
+
 	/**
 	 * Value of the latest entry of the onValueChangedListener.
 	 */
@@ -329,7 +327,7 @@ public class ValueBar extends View {
 			cX = mBarPointerHaloRadius;
 			cY = mBarPointerPosition;
 		}
-		
+
 		// Draw the pointer halo.
 		canvas.drawCircle(cX, cY, mBarPointerHaloRadius, mBarPointerHaloPaint);
 		// Draw the pointer.
@@ -401,6 +399,17 @@ public class ValueBar extends View {
 			break;
 		case MotionEvent.ACTION_UP:
 			mIsMovingPointer = false;
+			if(mPicker.onColorSelectedListener!= null){
+				mPicker.onColorSelectedListener.onColorSelected(mColor);
+				mPicker.oldSelectedListenerColor = mColor;
+			}
+			break;
+		case MotionEvent.ACTION_CANCEL:
+			mIsMovingPointer = false;
+			if(mPicker.onColorSelectedListener!= null){
+				mPicker.onColorSelectedListener.onColorSelected(mColor);
+				mPicker.oldSelectedListenerColor = mColor;
+			}
 			break;
 		}
 		return true;
@@ -410,7 +419,7 @@ public class ValueBar extends View {
 	 * Set the bar color. <br>
 	 * <br>
 	 * Its discouraged to use this method.
-	 * 
+	 *
 	 * @param color
 	 */
 	public void setColor(int color) {
@@ -423,7 +432,7 @@ public class ValueBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
-		
+
 		Color.colorToHSV(color, mHSVColor);
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
 				x1, y1, new int[] {
@@ -441,7 +450,7 @@ public class ValueBar extends View {
 
 	/**
 	 * Set the pointer on the bar. With the opacity value.
-	 * 
+	 *
 	 * @param value float between 0 and 1
 	 */
 	public void setValue(float value) {
@@ -456,10 +465,10 @@ public class ValueBar extends View {
 		}
 		invalidate();
 	}
-    
+
         /**
          * Calculate the color selected by the pointer on the bar.
-         * 
+         *
          * @param coord Coordinate of the pointer.
          */
 	private void calculateColor(int coord) {
@@ -476,7 +485,7 @@ public class ValueBar extends View {
 
 	/**
 	 * Get the currently selected color.
-	 * 
+	 *
 	 * @return The ARGB value of the currently selected color.
 	 */
 	public int getColor() {
@@ -488,7 +497,7 @@ public class ValueBar extends View {
 	 * <br>
 	 * WARNING: Don't change the color picker. it is done already when the bar
 	 * is added to the ColorPicker
-	 * 
+	 *
 	 * @see com.larswerkman.holocolorpicker.ColorPicker#addSVBar(com.larswerkman.holocolorpicker.SVBar)
 	 * @param picker
 	 */
