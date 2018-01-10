@@ -577,10 +577,8 @@ public class ColorPicker extends View {
 	private float colorToAngle(int color) {
 		float[] colors = new float[3];
 		Color.colorToHSV(color, colors);
-
-		float rad = (float) Math.toRadians(colors[0]);
-		if (rad > Math.PI) rad -= 2 * Math.PI;
-		return rad;
+		
+		return (float) Math.toRadians(-colors[0]);
 	}
 
 	@Override
