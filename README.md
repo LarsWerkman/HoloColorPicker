@@ -81,7 +81,7 @@ picker.setOldCenterColor(picker.getColor());
 //in the activity
 picker.setOnColorChangedListener(this);
 
-//to turn of showing the old color
+//to turn off showing the old color
 picker.setShowOldCenterColor(false);
 
 //adding onChangeListeners to bars
