@@ -6,15 +6,40 @@
         <attr name="color_wheel_thickness" format="dimension" />
         <attr name="color_center_radius" format="dimension" />
         <attr name="color_center_halo_radius" format="dimension"/>
+        <attr name="color_center_halo_enabled" format="boolean"/>
+        <attr name="color_halo_color" format="color"/>
+        <attr name="color_show_older" format="boolean"/>
         <attr name="color_pointer_radius" format="dimension" />
         <attr name="color_pointer_halo_radius" format="dimension" />
+        <attr name="color_pointer_halo_enabled" format="boolean"/>
     </declare-styleable>
-    <declare-styleable name="ColorBars">
+
+    <declare-styleable name="Bar">
         <attr name="bar_thickness" format="dimension" />
         <attr name="bar_length" format="dimension" />
         <attr name="bar_pointer_radius" format="dimension" />
         <attr name="bar_pointer_halo_radius" format="dimension" />
-        <attr name="bar_orientation_horizontal" format="boolean" />
+        <attr name="bar_pointer_halo_color" format="color"/>
+        <attr name="bar_pointer_halo_enabled" format="boolean"/>
+        <attr name="bar_orientation" format="integer">
+            <enum name="horizontal" value="1"/>
+            <enum name="vertical" value="2"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="OpacityBar">
+        <attr name="bar_minOpacity" format="integer"/>
+        <attr name="bar_maxOpacity" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="SaturationBar">
+        <attr name="bar_minSaturation" format="float"/>
+        <attr name="bar_maxSaturation" format="float"/>
+    </declare-styleable>
+
+    <declare-styleable name="ValueBar">
+        <attr name="bar_minValue" format="float"/>
+        <attr name="bar_maxValue" format="float"/>
     </declare-styleable>
 
 </resources>
