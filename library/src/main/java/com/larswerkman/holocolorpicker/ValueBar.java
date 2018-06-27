@@ -42,13 +42,13 @@ public class ValueBar extends View {
 	private static final String STATE_COLOR = "color";
 	private static final String STATE_VALUE = "value";
 	private static final String STATE_ORIENTATION = "orientation";
-	
+
 	/**
 	 * Constants used to identify orientation.
 	 */
 	private static final boolean ORIENTATION_HORIZONTAL = true;
 	private static final boolean ORIENTATION_VERTICAL = false;
-	
+
 	/**
 	 * Default orientation of the bar.
 	 */
@@ -86,6 +86,11 @@ public class ValueBar extends View {
 	private Paint mBarPaint;
 
 	/**
+	 * {@code Paint} instance used to draw the halo of the bar.
+	 */
+	private Paint mBarPaintHalo;
+
+	/**
 	 * {@code Paint} instance used to draw the pointer.
 	 */
 	private Paint mBarPointerPaint;
@@ -101,14 +106,24 @@ public class ValueBar extends View {
 	private RectF mBarRect = new RectF();
 
 	/**
+	 * The rectangle enclosing the halo of the bar.
+	 */
+	private RectF mBarRectHalo = new RectF();
+
+	/**
 	 * {@code Shader} instance used to fill the shader of the paint.
 	 */
 	private Shader shader;
 
 	/**
+	 * {@code Shader} instance used to fill the shader of the halo of the paint.
+	 */
+	private Shader shaderHalo;
+
+	/**
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
 	 * {@code false} once the user stops touching the screen.
-	 * 
+	 *
 	 * @see #onTouchEvent(android.view.MotionEvent)
 	 */
 	private boolean mIsMovingPointer;
@@ -143,13 +158,13 @@ public class ValueBar extends View {
 	 * Used to toggle orientation between vertical and horizontal.
 	 */
 	private boolean mOrientation;
-	
+
     /**
      * Interface and listener so that changes in ValueBar are sent
      * to the host activity/fragment
      */
     private OnValueChangedListener onValueChangedListener;
-    
+
 	/**
 	 * Value of the latest entry of the onValueChangedListener.
 	 */
@@ -207,10 +222,14 @@ public class ValueBar extends View {
 		mBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mBarPaint.setShader(shader);
 
+		mBarPaintHalo = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mBarPaintHalo.setShader(shaderHalo);
+		mBarPaintHalo.setAlpha(0x50);
+
 		mBarPointerPosition = mBarPointerHaloRadius;
 
 		mBarPointerHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mBarPointerHaloPaint.setColor(Color.BLACK);
+		mBarPointerHaloPaint.setColor(0xff81ff00);
 		mBarPointerHaloPaint.setAlpha(0x50);
 
 		mBarPointerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -273,6 +292,10 @@ public class ValueBar extends View {
 					(mBarPointerHaloRadius - (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)),
 					(mBarPointerHaloRadius + (mBarThickness / 2)));
+            mBarRectHalo.set(mBarPointerHaloRadius - 2f,
+					(mBarPointerHaloRadius - (mBarThickness / 2)) - 2f,
+					(mBarLength + (mBarPointerHaloRadius)) + 2f,
+					(mBarPointerHaloRadius + (mBarThickness / 2)) + 2f);
 		}
 		else {
 			x1 = mBarThickness;
@@ -282,6 +305,10 @@ public class ValueBar extends View {
 					mBarPointerHaloRadius,
 					(mBarPointerHaloRadius + (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)));
+			mBarRectHalo.set((mBarPointerHaloRadius - (mBarThickness / 2)) - 2f,
+					mBarPointerHaloRadius - 2f,
+					(mBarPointerHaloRadius + (mBarThickness / 2)) + 2f,
+					(mBarLength + (mBarPointerHaloRadius)) + 2f);
 		}
 
 		// Update variables that depend of mBarLength.
@@ -290,8 +317,16 @@ public class ValueBar extends View {
 					x1, y1,
 					new int[] { Color.HSVToColor(0xFF, mHSVColor), Color.BLACK },
 					null, Shader.TileMode.CLAMP);
+			shaderHalo = new LinearGradient(mBarPointerHaloRadius, 0,
+					x1, y1,
+					new int[] { Color.HSVToColor(0xFF, mHSVColor), Color.BLACK },
+					null, Shader.TileMode.CLAMP);
 		} else {
 			shader = new LinearGradient(mBarPointerHaloRadius, 0,
+					x1, y1,
+					new int[] { 0xff81ff00, Color.BLACK }, null,
+					Shader.TileMode.CLAMP);
+			shaderHalo = new LinearGradient(mBarPointerHaloRadius, 0,
 					x1, y1,
 					new int[] { 0xff81ff00, Color.BLACK }, null,
 					Shader.TileMode.CLAMP);
@@ -299,6 +334,7 @@ public class ValueBar extends View {
 		}
 
 		mBarPaint.setShader(shader);
+		mBarPaintHalo.setShader(shaderHalo);
 		mPosToSatFactor = 1 / ((float) mBarLength);
 		mSatToPosFactor = ((float) mBarLength) / 1;
 
@@ -316,8 +352,11 @@ public class ValueBar extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		// Draw the halo of the bar.
+		canvas.drawRoundRect(mBarRectHalo, 5, 5, mBarPaintHalo);
+
 		// Draw the bar.
-		canvas.drawRect(mBarRect, mBarPaint);
+		canvas.drawRoundRect(mBarRect, 5, 5, mBarPaint);
 
 		// Calculate the center of the pointer.
 		int cX, cY;
@@ -329,7 +368,7 @@ public class ValueBar extends View {
 			cX = mBarPointerHaloRadius;
 			cY = mBarPointerPosition;
 		}
-		
+
 		// Draw the pointer halo.
 		canvas.drawCircle(cX, cY, mBarPointerHaloRadius, mBarPointerHaloPaint);
 		// Draw the pointer.
@@ -358,6 +397,8 @@ public class ValueBar extends View {
 				mBarPointerPosition = Math.round(dimen);
 				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
+				mBarPointerHaloPaint.setColor(mColor);
+				mBarPointerHaloPaint.setAlpha(0x50);
 				invalidate();
 			}
 			break;
@@ -369,6 +410,8 @@ public class ValueBar extends View {
 					mBarPointerPosition = Math.round(dimen);
 					calculateColor(Math.round(dimen));
 					mBarPointerPaint.setColor(mColor);
+					mBarPointerHaloPaint.setColor(mColor);
+					mBarPointerHaloPaint.setAlpha(0x50);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 						mPicker.changeOpacityBarColor(mColor);
@@ -378,6 +421,8 @@ public class ValueBar extends View {
 					mBarPointerPosition = mBarPointerHaloRadius;
 					mColor = Color.HSVToColor(mHSVColor);
 					mBarPointerPaint.setColor(mColor);
+					mBarPointerHaloPaint.setColor(mColor);
+					mBarPointerHaloPaint.setAlpha(0x50);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 						mPicker.changeOpacityBarColor(mColor);
@@ -387,6 +432,8 @@ public class ValueBar extends View {
 					mBarPointerPosition = mBarPointerHaloRadius + mBarLength;
 					mColor = Color.BLACK;
 					mBarPointerPaint.setColor(mColor);
+					mBarPointerHaloPaint.setColor(mColor);
+					mBarPointerHaloPaint.setAlpha(0x50);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 						mPicker.changeOpacityBarColor(mColor);
@@ -410,7 +457,7 @@ public class ValueBar extends View {
 	 * Set the bar color. <br>
 	 * <br>
 	 * Its discouraged to use this method.
-	 * 
+	 *
 	 * @param color
 	 */
 	public void setColor(int color) {
@@ -423,14 +470,21 @@ public class ValueBar extends View {
 			x1 = mBarThickness;
 			y1 = (mBarLength + mBarPointerHaloRadius);
 		}
-		
+
 		Color.colorToHSV(color, mHSVColor);
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
 				x1, y1, new int[] {
 						color, Color.BLACK }, null, Shader.TileMode.CLAMP);
+		shaderHalo = new LinearGradient(mBarPointerHaloRadius, 0,
+				x1, y1, new int[] {
+						color, Color.BLACK }, null, Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
+		mBarPaintHalo.setShader(shaderHalo);
+		mBarPaintHalo.setAlpha(0x50);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
+		mBarPointerHaloPaint.setColor(mColor);
+		mBarPointerHaloPaint.setAlpha(0x50);
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
 			if(mPicker.hasOpacityBar())
@@ -441,7 +495,7 @@ public class ValueBar extends View {
 
 	/**
 	 * Set the pointer on the bar. With the opacity value.
-	 * 
+	 *
 	 * @param value float between 0 and 1
 	 */
 	public void setValue(float value) {
@@ -450,16 +504,18 @@ public class ValueBar extends View {
 						+ mBarPointerHaloRadius);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
+		mBarPointerHaloPaint.setColor(mColor);
+		mBarPointerHaloPaint.setAlpha(0x50);
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
 			mPicker.changeOpacityBarColor(mColor);
 		}
 		invalidate();
 	}
-    
+
         /**
          * Calculate the color selected by the pointer on the bar.
-         * 
+         *
          * @param coord Coordinate of the pointer.
          */
 	private void calculateColor(int coord) {
@@ -476,7 +532,7 @@ public class ValueBar extends View {
 
 	/**
 	 * Get the currently selected color.
-	 * 
+	 *
 	 * @return The ARGB value of the currently selected color.
 	 */
 	public int getColor() {
@@ -488,7 +544,7 @@ public class ValueBar extends View {
 	 * <br>
 	 * WARNING: Don't change the color picker. it is done already when the bar
 	 * is added to the ColorPicker
-	 * 
+	 *
 	 * @see com.larswerkman.holocolorpicker.ColorPicker#addSVBar(com.larswerkman.holocolorpicker.SVBar)
 	 * @param picker
 	 */

@@ -357,7 +357,7 @@ public class ColorPicker extends View {
 		mColorWheelPaint.setStrokeWidth(mColorWheelThickness);
 
 		mPointerHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPointerHaloPaint.setColor(Color.BLACK);
+		mPointerHaloPaint.setColor(calculateColor(mAngle));
 		mPointerHaloPaint.setAlpha(0x50);
 
 		mPointerColor = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -372,7 +372,7 @@ public class ColorPicker extends View {
 		mCenterOldPaint.setStyle(Paint.Style.FILL);
 
 		mCenterHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCenterHaloPaint.setColor(Color.BLACK);
+		mCenterHaloPaint.setColor(calculateColor(mAngle));
 		mCenterHaloPaint.setAlpha(0x00);
 		
 		mCenterNewColor = calculateColor(mAngle);
@@ -525,6 +525,8 @@ public class ColorPicker extends View {
 	public void setColor(int color) {
 		mAngle = colorToAngle(color);
 		mPointerColor.setColor(calculateColor(mAngle));
+		mPointerHaloPaint.setColor(calculateColor(mAngle));
+		mPointerHaloPaint.setAlpha(0x50);
 
 		// check of the instance isn't null
 		if (mOpacityBar != null) {
@@ -627,6 +629,8 @@ public class ColorPicker extends View {
 			if (mUserIsMovingPointer) {
 				mAngle = (float) Math.atan2(y - mSlopY, x - mSlopX);
 				mPointerColor.setColor(calculateColor(mAngle));
+				mPointerHaloPaint.setColor(calculateColor(mAngle));
+				mPointerHaloPaint.setAlpha(0x50);
 
 				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
 				
@@ -735,6 +739,8 @@ public class ColorPicker extends View {
 	public void setNewCenterColor(int color) {
 		mCenterNewColor = color;
 		mCenterNewPaint.setColor(color);
+		mCenterHaloPaint.setColor(color);
+		mCenterHaloPaint.setAlpha(0x00);
 		if (mCenterOldColor == 0) {
 			mCenterOldColor = color;
 			mCenterOldPaint.setColor(color);
@@ -871,6 +877,8 @@ public class ColorPicker extends View {
 		mShowCenterOldColor = savedState.getBoolean(STATE_SHOW_OLD_COLOR);
 		int currentColor = calculateColor(mAngle);
 		mPointerColor.setColor(currentColor);
+		mPointerHaloPaint.setColor(currentColor);
+		mPointerHaloPaint.setAlpha(0x50);
 		setNewCenterColor(currentColor);
 	}
 
