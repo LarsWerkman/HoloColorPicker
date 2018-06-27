@@ -87,6 +87,11 @@ public class SVBar extends View {
 	private Paint mBarPaint;
 
 	/**
+	 * {@code Paint} instance used to draw the halo of the bar.
+	 */
+	private Paint mBarPaintHalo;
+
+	/**
 	 * {@code Paint} instance used to draw the pointer.
 	 */
 	private Paint mBarPointerPaint;
@@ -102,9 +107,19 @@ public class SVBar extends View {
 	private RectF mBarRect = new RectF();
 
 	/**
+	 * The rectangle enclosing the halo of the bar.
+	 */
+	private RectF mBarRectHalo = new RectF();
+
+	/**
 	 * {@code Shader} instance used to fill the shader of the paint.
 	 */
 	private Shader shader;
+
+	/**
+	 * {@code Shader} instance used to fill the shader of the halo of the paint.
+	 */
+	private Shader shaderHalo;
 
 	/**
 	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
@@ -185,10 +200,14 @@ public class SVBar extends View {
 		mBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mBarPaint.setShader(shader);
 
+		mBarPaintHalo = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mBarPaintHalo.setShader(shaderHalo);
+		mBarPaintHalo.setAlpha(0x50);
+
 		mBarPointerPosition = (mBarLength / 2) + mBarPointerHaloRadius;
 
 		mBarPointerHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mBarPointerHaloPaint.setColor(Color.BLACK);
+		mBarPointerHaloPaint.setColor(0xff81ff00);
 		mBarPointerHaloPaint.setAlpha(0x50);
 
 		mBarPointerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -251,6 +270,10 @@ public class SVBar extends View {
 					(mBarPointerHaloRadius - (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)),
 					(mBarPointerHaloRadius + (mBarThickness / 2)));
+			mBarRectHalo.set(mBarPointerHaloRadius - 2f,
+					(mBarPointerHaloRadius - (mBarThickness / 2)) - 2f,
+					(mBarLength + (mBarPointerHaloRadius)) + 2f,
+					(mBarPointerHaloRadius + (mBarThickness / 2)) + 2f);
 		}
 		else {
 			x1 = mBarThickness;
@@ -260,6 +283,10 @@ public class SVBar extends View {
 					mBarPointerHaloRadius,
 					(mBarPointerHaloRadius + (mBarThickness / 2)),
 					(mBarLength + (mBarPointerHaloRadius)));
+			mBarRectHalo.set((mBarPointerHaloRadius - (mBarThickness / 2)) - 2f,
+					mBarPointerHaloRadius - 2f,
+					(mBarPointerHaloRadius + (mBarThickness / 2)) + 2f,
+					(mBarLength + (mBarPointerHaloRadius)) + 2f);
 		}
 
 		// Update variables that depend of mBarLength.
@@ -268,8 +295,16 @@ public class SVBar extends View {
 					x1, y1, new int[] {
 							0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
 					null, Shader.TileMode.CLAMP);
+			shaderHalo = new LinearGradient(mBarPointerHaloRadius, 0,
+					x1, y1, new int[] {
+							0xffffffff, Color.HSVToColor(mHSVColor), 0xff000000 },
+					null, Shader.TileMode.CLAMP);
 		} else {
 			shader = new LinearGradient(mBarPointerHaloRadius, 0,
+					x1, y1, new int[] {
+							0xffffffff, 0xff81ff00, 0xff000000 }, null,
+					Shader.TileMode.CLAMP);
+			shaderHalo = new LinearGradient(mBarPointerHaloRadius, 0,
 					x1, y1, new int[] {
 							0xffffffff, 0xff81ff00, 0xff000000 }, null,
 					Shader.TileMode.CLAMP);
@@ -277,6 +312,7 @@ public class SVBar extends View {
 		}
 		
 		mBarPaint.setShader(shader);
+		mBarPaintHalo.setShader(shaderHalo);
 		mPosToSVFactor = 1 / ((float) mBarLength / 2);
 		mSVToPosFactor = ((float) mBarLength / 2) / 1;
 		float[] hsvColor = new float[3];
@@ -296,8 +332,11 @@ public class SVBar extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		// Draw the halo of the bar.
+		canvas.drawRoundRect(mBarRectHalo, 5, 5, mBarPaintHalo);
+
 		// Draw the bar.
-		canvas.drawRect(mBarRect, mBarPaint);
+		canvas.drawRoundRect(mBarRect, 5, 5, mBarPaint);
 
 		// Calculate the center of the pointer.
 		int cX, cY;
@@ -338,6 +377,8 @@ public class SVBar extends View {
 				mBarPointerPosition = Math.round(dimen);
 				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
+				mBarPointerHaloPaint.setColor(mColor);
+				mBarPointerHaloPaint.setAlpha(0x50);
 				invalidate();
 			}
 			break;
@@ -349,6 +390,8 @@ public class SVBar extends View {
 					mBarPointerPosition = Math.round(dimen);
 					calculateColor(Math.round(dimen));
 					mBarPointerPaint.setColor(mColor);
+					mBarPointerHaloPaint.setColor(mColor);
+					mBarPointerHaloPaint.setAlpha(0x50);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 						mPicker.changeOpacityBarColor(mColor);
@@ -358,6 +401,8 @@ public class SVBar extends View {
 					mBarPointerPosition = mBarPointerHaloRadius;
 					mColor = Color.WHITE;
 					mBarPointerPaint.setColor(mColor);
+					mBarPointerHaloPaint.setColor(mColor);
+					mBarPointerHaloPaint.setAlpha(0x50);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 						mPicker.changeOpacityBarColor(mColor);
@@ -367,6 +412,8 @@ public class SVBar extends View {
 					mBarPointerPosition = mBarPointerHaloRadius + mBarLength;
 					mColor = Color.BLACK;
 					mBarPointerPaint.setColor(mColor);
+					mBarPointerHaloPaint.setColor(mColor);
+					mBarPointerHaloPaint.setAlpha(0x50);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
 						mPicker.changeOpacityBarColor(mColor);
@@ -392,6 +439,8 @@ public class SVBar extends View {
 				+ mBarPointerHaloRadius);
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
+		mBarPointerHaloPaint.setColor(mColor);
+		mBarPointerHaloPaint.setAlpha(0x50);
 		// Check whether the Saturation/Value bar is added to the ColorPicker
 		// wheel
 		if (mPicker != null) {
@@ -411,6 +460,8 @@ public class SVBar extends View {
 				+ mBarPointerHaloRadius + (mBarLength / 2));
 		calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
+		mBarPointerHaloPaint.setColor(mColor);
+		mBarPointerHaloPaint.setAlpha(0x50);
 		// Check whether the Saturation/Value bar is added to the ColorPicker
 		// wheel
 		if (mPicker != null) {
@@ -441,9 +492,16 @@ public class SVBar extends View {
 		shader = new LinearGradient(mBarPointerHaloRadius, 0,
 				x1, y1, new int[] {Color.WHITE, color, Color.BLACK}, null,
 				Shader.TileMode.CLAMP);
+		shaderHalo = new LinearGradient(mBarPointerHaloRadius, 0,
+				x1, y1, new int[] {Color.WHITE, color, Color.BLACK}, null,
+				Shader.TileMode.CLAMP);
 		mBarPaint.setShader(shader);
+		mBarPaintHalo.setShader(shaderHalo);
+		mBarPaintHalo.setAlpha(0x50);
 	    calculateColor(mBarPointerPosition);
 		mBarPointerPaint.setColor(mColor);
+		mBarPointerHaloPaint.setColor(mColor);
+		mBarPointerHaloPaint.setAlpha(0x50);
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
 			if(mPicker.hasOpacityBar())
