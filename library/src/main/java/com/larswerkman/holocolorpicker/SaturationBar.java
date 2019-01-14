@@ -357,6 +357,11 @@ public class SaturationBar extends View {
 				mBarPointerPosition = Math.round(dimen);
 				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
+				if (mPicker != null) {
+						mPicker.setNewCenterColor(mColor);
+						mPicker.changeValueBarColor(mColor);
+						mPicker.changeOpacityBarColor(mColor);
+				}
 				invalidate();
 			}
 			break;

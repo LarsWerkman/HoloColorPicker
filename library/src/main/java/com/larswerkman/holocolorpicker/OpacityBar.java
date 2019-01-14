@@ -357,6 +357,9 @@ public class OpacityBar extends View {
 				mBarPointerPosition = Math.round(dimen);
 				calculateColor(Math.round(dimen));
 				mBarPointerPaint.setColor(mColor);
+				if (mPicker != null) {
+						mPicker.setNewCenterColor(mColor);
+				}
 				invalidate();
 			}
 			break;
