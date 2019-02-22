@@ -1,4 +1,4 @@
-<h1>Android Holo ColorPicker</h1>
+# Android Holo ColorPicker
 
 Marie Schweiz <http://marie-schweiz.de/> made a beautifull new design for the Holo ColorPicker which added a lot of new functionality.
 
@@ -12,15 +12,17 @@ Demo can be found on my Google Drive [here](https://docs.google.com/file/d/0Bwcl
 ![image](https://lh6.googleusercontent.com/-Rn5TDr6QoG4/UQk8OPpsPEI/AAAAAAAAAX0/TKlibuBjupo//framed_HoloColorPicker.png)
 ![image](https://lh4.googleusercontent.com/-GtJYDCQdnVo/UVW4ML7WIuI/AAAAAAAAAj4/YKHEUnhvLhA//framed_colorpicker.png)
 
-<h3>UDPATE</h3>
+### Update
 Now bars can change their orientation, Thanks to [tonyr59h](https://github.com/tonyr59h)
 also the gradle build version was updated to 0.7.+
+
 ![image](https://lh5.googleusercontent.com/-3KSukk_S94Y/UvKiNER-OBI/AAAAAAAAA-k/8SPfOmFhLjE//device-2014-02-05-180704_framed.png)
 
 
-<h2>Documentation</h2>
+## Documentation
 
 To add the ColorPicker to your layout add this to your xml
+
 ```xml
 <com.larswerkman.holocolorpicker.ColorPicker
     android:id="@+id/picker"
@@ -29,6 +31,7 @@ To add the ColorPicker to your layout add this to your xml
 ```       
         
 To add a Saturation/Value bar to your layout add this to your xml
+
 ```xml
 <com.larswerkman.holocolorpicker.SVBar
     android:id="@+id/svbar"
@@ -60,7 +63,8 @@ and a Value bar
 ```
 
 To connect the bars with the colorpicker and to get the selected color.
-```java
+
+```:java
 ColorPicker picker = (ColorPicker) findViewById(R.id.picker);
 SVBar svBar = (SVBar) findViewById(R.id.svbar);
 OpacityBar opacityBar = (OpacityBar) findViewById(R.id.opacitybar);
@@ -90,15 +94,18 @@ valuebar.setOnValueChangeListener(new OnValueChangeListener …)
 saturationBar.setOnSaturationChangeListener(new OnSaturationChangeListener …)
 ```	
 
-<H2>Dependency</H2>
+## Dependency
 Adding it as a dependency to your project.
 
+```
 	dependencies {
     	compile 'com.larswerkman:HoloColorPicker:1.5'
 	}
+```
 
-<H2>License</H2>
-	
+## License
+
+```
  	 Copyright 2012 Lars Werkman
  	
  	 Licensed under the Apache License, Version 2.0 (the "License");
@@ -112,7 +119,7 @@ Adding it as a dependency to your project.
  	 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  	 See the License for the specific language governing permissions and
  	 limitations under the License.
- 	
+```	
 
-<h2>Devoleped By</h2>
+## Devoleped By
 **Lars Werkman**
